@@ -427,13 +427,34 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
 #panel-iq .scheme-grid{display:grid;grid-template-columns:1fr;gap:10px}
 #panel-iq .conc-block{margin-top:14px;border:1px solid var(--line);border-radius:var(--r);background:#fff;padding:12px 14px;overflow-x:auto}
 #panel-iq .conc-block .rp-sub{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:8px}
-#panel-iq .rank-table{width:100%;border-collapse:collapse;min-width:720px}
-#panel-iq .rank-table th,#panel-iq .rank-table td{border:1px solid var(--line);padding:9px 12px;font-size:12.5px;line-height:1.8;vertical-align:top;text-align:left}
+#panel-iq .rank-table{width:100%;border-collapse:collapse;min-width:760px}
+#panel-iq .rank-table th,#panel-iq .rank-table td{border:1px solid var(--line);padding:10px 12px;font-size:12.5px;line-height:1.85;vertical-align:top;text-align:left}
 #panel-iq .rank-table th{background:#F5F8FB;color:var(--ink-3);font-weight:700;font-size:11.5px;white-space:nowrap}
-#panel-iq .rank-table td.rk-dim{width:110px;font-weight:700;color:var(--ink-1);white-space:normal;word-break:break-word}
-#panel-iq .rank-table .rk-head{font-weight:800;color:var(--brand,#1B5E8C);margin-bottom:4px}
-#panel-iq .rank-table .rk-line{margin:3px 0}
-#panel-iq .rank-table .rk-nm{display:inline-block;min-width:86px;font-weight:700;color:var(--ink-2)}
+#panel-iq .rank-table th .sc-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+#panel-iq .rank-table th.rk-hdim{width:88px}
+#panel-iq .rank-table th.rk-hsub{width:104px}
+#panel-iq .rank-table td.rk-dim{width:88px;font-weight:700;color:var(--ink-1);vertical-align:middle;white-space:normal;word-break:break-word;background:#FAFCFE}
+#panel-iq .rank-table td.rk-sub{width:104px;font-weight:700;color:var(--ink-2);font-size:12px;vertical-align:middle;white-space:normal;word-break:break-word}
+#panel-iq .rank-table td.rk-cell{vertical-align:top}
+#panel-iq .rank-table .rk-ctop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#panel-iq .rank-table .rk-rank{font-size:12px;font-weight:700;color:var(--ink-1);white-space:nowrap}
+#panel-iq .rank-table .rk-rank.top{color:#8A4B06}
+#panel-iq .rank-table .rk-val{font-weight:700;color:var(--ink-1);font-variant-numeric:tabular-nums}
+#panel-iq .rank-table .rk-u{font-weight:600;font-size:10.5px;color:var(--ink-3);margin-right:5px}
+#panel-iq .rank-table .rk-verdict{font-size:12px;font-weight:700;white-space:nowrap}
+#panel-iq .rank-table .rk-verdict.ok{color:#147A55;border-color:#B8E3D0;background:#E4F4EC}
+#panel-iq .rank-table .rk-verdict.warn{color:#B96A0F;border-color:#F0D5AC;background:#FBF1E0}
+#panel-iq .rank-table .rk-verdict.bad{color:#CE2B28;border-color:#F2C1BE;background:#FBE9E7}
+#panel-iq .rank-table .rk-verdict.na{color:#8AA0B4;border-color:#D8E1EA;background:#F2F5F8}
+#panel-iq .rank-table .rk-cbot{margin-top:5px;font-size:12px;color:var(--ink-2)}
+#panel-iq .rank-table .rk-cnote{font-size:11px;line-height:1.85;color:var(--ink-3,#8AA0B4)}
+#panel-iq .rank-table .rk-c1{font-size:12px;line-height:1.9;word-break:keep-all;overflow-wrap:anywhere}
+#panel-iq .rank-table .rk-cpass{color:var(--ink-2)}
+#panel-iq .rank-table .rk-cok{font-size:12px;line-height:1.9}
+#panel-iq .rank-table .rk-ok{color:#147A55;font-weight:700}
+#panel-iq .rank-table .rk-okm{color:var(--ink-2);font-weight:600}
+#panel-iq .rank-table .rk-note{color:var(--ink-3,#8AA0B4)}
+#panel-iq .rk-tip{margin-top:8px;font-size:11.5px;line-height:1.7;color:var(--ink-3,#8AA0B4)}
 #panel-iq .scheme-card{border:1px solid var(--line);border-radius:var(--r);background:#fff;padding:12px 14px}
 #panel-iq .sc-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 #panel-iq .sc-head .sc-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
@@ -641,7 +662,6 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   <a class="sn-item" href="#generator">数据汇总生成器</a>
   <a class="sn-item" href="#workbench">分析工作台</a>
   <a class="sn-item sn-parent" href="#results">分析结果</a>
-  <a class="sn-item sn-child" href="#summary-cards">汇总指标</a>
   <a class="sn-item sn-child" href="#report-preview">测试报告呈现</a>
   <a class="sn-item sn-child" href="#result-blocks">指标判定明细</a>
   <a class="sn-item sn-child" href="#export-area">导出结果</a>
@@ -859,23 +879,13 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   <section class="section" id="results" hidden>
     <div class="section-head">
       <h2>分析结果</h2>
-      <span class="hint" id="result-summary-text"></span>
-    </div>
-    <!-- 汇总卡 -->
-    <div class="summary-grid" id="summary-cards"></div>
-    <!-- 通过率图 -->
-    <div class="panel" style="margin-top:16px">
-      <div class="chart-wrap">
-        <div id="chart-pass" style="width:100%;height:300px"></div>
-        <div class="chart-fallback" id="chart-fallback"></div>
-      </div>
     </div>
     <!-- 测试报告呈现（可插入飞书文档） -->
-    <div class="report-panel" style="margin-top:16px">
+    <div class="report-panel">
       <div class="report-head">
         <div class="report-t">
           <b>测试报告呈现</b>
-          <span>方案对比 + 合格率图表 + 判定明细，一键导出完整报告，可直接插入飞书文档</span>
+          <span>合格率图表 + 方案排名 + 判定明细，一键导出完整报告，可直接插入飞书文档</span>
         </div>
         <div class="report-actions">
           <button class="btn" id="btn-report-link" type="button">完整测试报告（链接）</button>
@@ -1271,7 +1281,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     </svg>
     <h1>画质客观评测台</h1>
     <div class="en-name">Image Quality Bench</div>
-    <p><span class="tag">纯本地离线</span>图片只在本机浏览器内读取，不上传、无需 Imatest。覆盖四项客观指标：亮度均匀性 / 角部色偏 ΔE00、白平衡还原（MaxC）、SFR 锐度（MTF50 / MTF50P、Oversharpening 锐化量、粗糙度、色边），各项按阈值给出 Pass / Fail。</p>
+    <p><span class="tag">纯本地离线</span>图片只在本机浏览器内读取，不上传、无需 Imatest。覆盖四项客观指标：亮度均匀性 / 角部色偏 ΔE00、白平衡还原（MaxC）、SFR 锐度（ISO 12233 斜刃链路，MTF50 / MTF50P、Oversharpening 锐化量、边缘过冲、粗糙度、色边），各项按阈值给出 Pass / Fail。</p>
   </header>
 
   <!-- ===== 上传与参数 ===== -->
@@ -1361,18 +1371,26 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
 
   <!-- ===== SFR 锐度判定 ===== -->
   <section class="panel" id="sfrPanel">
-    <h2>SFR 锐度判定（参考级）</h2>
-    <p class="muted">添加多张斜刃测试图，点选一张后在图上拖框<b>只框选一条斜刃带</b>（刃约 10°、黑白分界清晰、曝光适中、均匀光无眩光、无运动模糊）。由斜刃 FFT 计算参考 MTF50 / MTF50P，并给出 Oversharpening 锐化量、边缘粗糙度与色边 LCA。</p>
+    <h2>SFR 锐度判定（ISO 12233 链路）</h2>
+    <p class="muted">添加多张斜刃测试图，点选一张后在图上拖框<b>只框选一条斜刃带</b>（刃约 5°–10°、黑白分界清晰、曝光适中、均匀光无眩光、无运动模糊）；刃方向可选竖直 / 水平 / 自动（自动＝先按竖直测，测不出再转置按水平测）。算法为 ISO 12233 / PIMA 斜刃链路（逐行阶跃拟合 → 5 阶刃线拟合 → α=11 超采样 → 非均匀校正 → LSF → 升余弦窗 → DFT），输出 MTF50 / MTF50P，并给出 Oversharpening 锐化量、边缘过冲（白边）、边缘粗糙度与色边 LCA。</p>
     <div id="sfrDrop" class="wb-drop"><strong>点击选择或拖拽 SFR 斜刃测试图到这里</strong><br><span class="muted">支持 JPG / PNG，可一次选多张</span></div>
     <div class="btnrow" style="margin:10px 0">
       <button class="ghost" id="sfrPick">添加 SFR 图（可多选）</button>
       <button class="ghost" id="sfrClearAll">清空全部</button>
       <button class="ghost" id="sfrCsv">导出 CSV</button>
+      <label class="ctl-inline" style="display:inline-flex;align-items:center;gap:6px">刃方向
+        <select id="sfrDir" style="padding:4px 6px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:13px;background:#fff;color:var(--ink)">
+          <option value="-1">自动</option><option value="0">竖直刃</option><option value="1">水平刃</option>
+        </select>
+      </label>
+      <label class="ctl-inline" style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" id="sfrAvg" style="width:auto;margin:0"> 多刃平均</label>
+      <span id="sfrDirHint" style="font-size:12px;color:var(--sub)"></span>
     </div>
     <div class="sfr-thresh">
       <label class="ctl-inline">MTF50 ≥ <input type="number" id="sfrThMtf50" value="0.5" min="0" step="0.01"></label>
       <label class="ctl-inline">MTF50P ≥ <input type="number" id="sfrThMtf50p" value="0.4" min="0" step="0.01"></label>
       <label class="ctl-inline">Oversharpening 锐化量 <input type="number" id="sfrThOsLo" value="10" step="0.5"> ~ <input type="number" id="sfrThOsHi" value="25" step="0.5"> %</label>
+      <label class="ctl-inline">边缘过冲 Overshoot ≤ <input type="number" id="sfrThOver" value="25" step="1"> %</label>
       <label class="ctl-inline">LCA ≤ <input type="number" id="sfrThLcaPx" value="1" step="0.05"> px 且 ≤ <input type="number" id="sfrThLcaPct" value="0.1" step="0.01"> %图高</label>
       <label class="ctl-inline">边缘粗糙度 ≤ <input type="number" id="sfrThRgh" value="0.1" step="0.01"> px</label>
     </div>
@@ -1380,18 +1398,19 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     <div id="sfrList" class="wb-list"></div>
     <div id="sfrStage" class="wb-stage">先添加图片，点选一张后在此框选斜刃带</div>
     <div id="sfrResult" class="wb-result"></div>
-    <p class="sfr-note">说明：Oversharpening 锐化量按 Imatest 口径取 f=0.15 c/p 处 MTF 相对直流的提升，即 100×(MTF(0.15)−1)（对照样本与 Imatest 偏差 ≤0.05）；色边 LCA 对应 Imatest CA Crossing（R/G/B 刃中心位置差），粗糙度对应 Imatest Total roughness（各扫描线刃中心相对拟合线的偏离 RMS），前端拟合基线用直线、Imatest 推荐二阶曲线，量级接近；这两项因对照样本无法自动定位刃、前端像素值无法离线复现，暂未做前端值与 Imatest 真值的偏差闭环，仅适合同批横向参考。若结果行提示“边缘不可靠 / 对比度不足 / 未识别到边缘”，说明框选偏离了清晰交界，请紧贴同一条黑白边界、避开线对交错区重新框选。</p>
+    <p class="sfr-note">说明：SFR 链路为 <b>ISO 12233 / PIMA 标准实现</b>（与 <code>12-ISO-SFR-py</code> 同一套算法逐段移植：逐行最小二乘阶跃拟合定位刃心 → 5 阶多项式拟合刃线 → α=11 法向超采样分箱 → 非均匀照度校正 → 中心差分 LSF → Modified apodization → 峰值对齐后加 Hann 窗 → DFT）。合成斜刃（σ=0.3–2.5 px，解析真值 exp(−2π²σ²f²)·sinc(f)）实测 MTF50 偏差 ≤0.5%。<br>Oversharpening 锐化量按 Imatest 口径取 f=0.15 c/p 处 MTF 相对直流的提升，即 100×(MTF(0.15)−1)；<b>边缘过冲</b>取 ESF 时域口径，即 (ESF 峰值 − 亮侧平台) ÷ 台阶高度 ×100，对应 Imatest 的 Overshoot %，是「锐化白边」的直接量化——它与 Oversharpening 是两个不同的量（一个在空域、一个在频域），同一张图两者可以相差近一倍，报告里写「白边」应引用过冲、写「锐化程度」应引用 Oversharpening；色边 LCA 对应 Imatest CA Crossing（R/G/B 刃中心位置差）；<b>粗糙度</b>对应 Imatest Total roughness，即各行阶跃拟合刃心相对<b>二阶基线</b>的偏离 RMS——因阶跃拟合比直接取穿越点平滑得多，同一张图的粗糙度读数会明显小于旧版（旧版为穿越点相对直线），0.1 px 规格建议按新读数重新标定。<br><b>水平刃</b>：方向选「水平刃」时把框内区域转置后走同一条链路（等价 Python 的 <code>measure_h</code>），水平/竖直两种刃的一切实测口径一致；选「自动」时先按竖直测，测不出再转置按水平测。<b>多刃平均</b>（勾选后生效）：勾选后<b>按住 Shift 再拖框</b>可追加备用刃（主框 + 2 条备用，最多 3 条，绿色虚线标出），各自归一、按 50% 点对齐后平均 ESF 再重算 MTF，只降噪、不改刃位与粗糙度；该功能 Python 版与 C 版都没有，属本站扩展。若结果行提示“边缘对比度不足 / 未识别到边缘 / 刃倾斜过大”，请紧贴同一条黑白边界、避开线对交错区重新框选。</p>
   </section>
 
   <section class="panel">
     <h2>工具定位与能力边界</h2>
     <div style="background:#f3f7fb;border:1px solid #d8e4ef;border-radius:10px;padding:14px 16px;line-height:1.8;font-size:13.5px;color:#33475b">
       <p><b>本工具适合：</b>纯本地离线、无需 Imatest，对同批图片做快速初筛与横向趋势比较，按阈值给出 Pass / Fail，用于筛掉明显不合格项、定位问题角位或边缘。</p>
-      <p><b>已对齐 Imatest 的口径：</b>亮度比采用全图 99.5 分位电平为分母（贴近 Imatest 全图最大电平，对照样本 MAE 约 0.5pp）；MTF50P、SFR 直流归一化按标准做法修正；Oversharpening 锐化量按 Imatest f=0.15 c/p 口径复现（100×(MTF(0.15)−1)，对照样本偏差 ≤0.05）。</p>
+      <p><b>已对齐 Imatest 的口径：</b>亮度比采用全图 99.5 分位电平为分母（贴近 Imatest 全图最大电平，对照样本 MAE 约 0.5pp）；<b>SFR 采用 ISO 12233 / PIMA 全链路</b>（线性化 → 阶跃拟合 → 5 阶刃线 → α=11 超采样 → 非均匀校正 → modified apodization → Hann 窗 → DFT），合成斜刃对解析真值 MTF50 偏差 ≤0.5%，MTF50P 与直流归一化同标准做法；Oversharpening 锐化量按 Imatest f=0.15 c/p 口径复现（100×(MTF(0.15)−1)）；边缘过冲按 Imatest ESF Overshoot 口径复现（占台阶高度的百分比）。</p>
       <p><b>前端做不到、须以 Imatest 为准：</b></p>
       <ul style="margin:6px 0 0 20px;padding:0">
         <li><b>绝对色偏 / 整体白平衡偏差</b>：需要白平衡增益、白点估计与色彩管理模型；本工具只做画面内相对色差（角 vs 中心）和中性区残余彩度 MaxC，不输出相对理想白点的绝对 ΔE。</li>
-        <li><b>Imatest 专有 SFR 处理</b>：自动刃对准、多刃平均去噪、线性化标定、专有 MTF 曲线平滑未实现；MTF50 为前端参考估算，可能与 Imatest 有小幅偏差。</li>
+        <li><b>SFR 仍需人工框选</b>：不提供自动找刃，框选位置直接影响读数；倾斜角、最小扫描线、扫幅、对比度都有守卫，不合格会直接报错而不是给一个凑合的数值。水平刃已支持（转置测量，等价 <code>measure_h</code>）。<b>多刃平均</b>为本站新增（Python 版与 C 版都没有）：按住 Shift 追加 1–2 条同质刃，各自归一后按 50% 点对齐平均 ESF 再重算 MTF，用于降噪，不是 Imatest 的原样实现。曲线平滑为固定的 0.02 c/px 移动平均，非 Imatest 专有平滑。绝对读数建议以 Imatest 复核。</li>
+        <li><b>过冲判定阈值</b>：默认 ≤25%（Imatest 经验分界为 10% 轻微、25% 过度），可按项目规格调整；该值随锐化强度单调上升，与 Oversharpening 同向但不同量。</li>
         <li><b>正式规格判定</b>：本工具结果用于初筛与趋势，出报告、对规格、定结论一律以 Imatest 标准读数复核为准。</li>
       </ul>
     </div>
@@ -1410,7 +1429,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       <p><b>中心峰值 / 均值</b>：中心区 99 分位亮度 / 平均亮度，仅作参考展示，不再作为亮度比分母。</p>
       <p><b>亮度 / 色偏 / 总判定</b>：亮度项、色偏项分别对照阈值，两项都为 PASS 时总判定才为 PASS。</p>
       <p><b>白平衡还原（MaxC）</b>：各中性区求平均 Lab 彩度 C=√(a²+b²)，取该图最大 MaxC，MaxC &lt; 阈值（默认 5）为 PASS；衡量中性白 / 灰是否被偏色，与亮度均匀性、画面色偏相互独立。</p>
-      <p><b>SFR 锐度判定（参考级）</b>：在斜刃测试图上框选一条斜刃带，由边缘响应 ESF 经 LSF、Hamming 窗与频谱分析得到 MTF 曲线。<b>MTF50</b>：MTF 降到直流基准 0.5 处的空间频率（Cy/Pxl），越高越锐，规格 ≥0.5；<b>MTF50P</b>：MTF 降到峰值 0.5 处的频率，对锐化增强更敏感，规格 ≥0.4；<b>Oversharpening 锐化量</b>：f=0.15 c/p 处 MTF 相对直流的提升，即 100×(MTF(0.15)−1)，规格落在 10%–25%（过低偏软、过高过度锐化出现光晕）；<b>边缘粗糙度</b>：各行刃位相对拟合直线的残差 RMS（px），越小刃越直，规格 ≤0.1px；<b>LCA 色边</b>：R/G/B 三通道刃位最大偏差（px）并换算为占图高百分比，需同时 ≤1px 且 ≤0.1% 图高。</p>
+      <p><b>SFR 锐度判定（ISO 12233 链路）</b>：在斜刃测试图上框选一条斜刃带，由边缘响应 ESF 经 LSF、Hann 窗（在峰值对齐后的中央半区加窗）与 DFT 得到 MTF 曲线。<b>MTF50</b>：MTF 降到直流基准 0.5 处的空间频率（Cy/Pxl），越高越锐，规格 ≥0.5；<b>MTF50P</b>：MTF 降到峰值 0.5 处的频率，对锐化增强更敏感，规格 ≥0.4；<b>Oversharpening 锐化量</b>：f=0.15 c/p 处 MTF 相对直流的提升，即 100×(MTF(0.15)−1)，规格落在 10%–25%（过低偏软、过高过度锐化出现光晕）；<b>边缘粗糙度</b>：各行阶跃拟合刃心相对二阶基线的偏离 RMS（px），越小刃越直，规格 ≤0.1px；<b>LCA 色边</b>：R/G/B 三通道刃位最大偏差（px）并换算为占图高百分比，需同时 ≤1px 且 ≤0.1% 图高。<b>刃方向</b>：竖直刃按列拟合、水平刃把框内区域转置后测，两者口径一致；<b>多刃平均</b>：勾选后按住 Shift 追加同质刃，把它们的 ESF 对齐平均后重算 MTF，读数更稳、过冲对噪声更不敏感。</p>
     </div>
   </details>
 
@@ -3514,8 +3533,10 @@ function analyze(noSave) {
   requestAnimationFrame(() => $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' }));
 }
 
-/* ---------- 渲染：汇总卡 ---------- */
+/* ---------- 渲染：汇总（卡片与统计提示已从页面移除，保留函数兼容旧调用） ---------- */
 function renderSummary() {
+  const elCards = $('#summary-cards'), elText = $('#result-summary-text');
+  if (!elCards && !elText) return;
   const { labels, grid, data } = state.analyzed;
   const st = computeStats(grid);
   const total = st.total, pass = st.pass, fail = st.fail, rate = st.rate;
@@ -3525,7 +3546,7 @@ function renderSummary() {
     { lab: '不合格项', val: fail, cls: 'bad', sub: '红字标记，需重点排查' },
     { lab: '整体通过率', val: rate + '%', cls: 'teal', sub: '按实际有数据项统计' }
   ];
-  $('#summary-cards').innerHTML = cards.map(c =>
+  if (elCards) elCards.innerHTML = cards.map(c =>
     '<div class="sum-card ' + c.cls + '"><div class="lab">' + c.lab + '</div>' +
     '<div class="val">' + c.val + '</div><div class="sub">' + c.sub + '</div></div>'
   ).join('');
@@ -3534,7 +3555,7 @@ function renderSummary() {
     const n = data.parsed.summary.length, m = data.parsed.mtf.length, sh = data.parsed.shading.length;
     return 'Summary ' + n + ' · MTF ' + m + ' · Shading ' + sh;
   };
-  $('#result-summary-text').textContent = labels.map((l, i) => l + '（' + stats(data[i]) + '）').join('　|　');
+  if (elText) elText.textContent = labels.map((l, i) => l + '（' + stats(data[i]) + '）').join('　|　');
 }
 
 /* ---------- 渲染：通过率图（ECharts，失败降级为 CSS 条形） ---------- */
@@ -3554,6 +3575,8 @@ function secRates(grid) {
   });
 }
 function renderChart() {
+  const holder0 = document.getElementById('chart-pass');
+  if (!holder0) return;   // 该图已移除（内容并入「测试报告呈现」），保留函数以兼容旧调用
   const { labels, grid } = state.analyzed;
   const per = secRates(grid);
   const series = labels.map((l, si) => ({
@@ -3742,72 +3765,210 @@ const RANK_SHORT = { mtf50: 'MTF50', mtf50p: 'MTF50P', os: '锐化', ca: '横向
   colorAccMax: '准度·最大', colorAccMean: '准度·平均', colorAccBlock1: '准度·块1', colorAccBlock2: '准度·块2',
   sat: '色彩饱和度', wb: '白平衡', exp: '曝光准确性', gamma: '伽马', contrast: '对比度',
   noise: 'SNR', luma: '亮度均匀性', colorSh: '色彩均匀性' };
-const RANK_LOW_GOOD = { rough: 1, wb: 1, colorSh: 1, ca: 1, colorAccMax: 1, colorAccMean: 1, colorAccBlock1: 1, colorAccBlock2: 1 }; // 均值越低越优
-const RANK_RANGE = { os: [10, 25], exp: [90, 180], gamma: [0.4, 0.6], contrast: [0.60, 0.75], sat: [95, 125] };
+/* 把光源名解析为「色温档 + 照度档」，用于文字化描述达标条件 */
+function lightCond(light) {
+  const str = String(light || '');
+  const mk = str.match(/(\d{4,5})\s*K/);
+  const ml = str.match(/(\d+)\s*lux/i);
+  if (!mk || !ml) return { cond: '', ct: '', lx: '' };
+  const k = +mk[1], lux = +ml[1];
+  const ct = k <= 3000 ? '低色温' : (k <= 5500 ? '中色温' : '高色温');
+  const lx = lux <= 80 ? '低亮度' : (lux <= 400 ? '中亮度' : '高亮度');
+  return { cond: ct + lx, ct: ct, lx: lx, k: k, lux: lux };
+}
+/* 从判定标准文本解析「单边门限 / 双侧区间」，用于把不同量纲的达标余量归一化后互相比较 */
+function critRule(text) {
+  const t = String(text || '');
+  let m = t.match(/([\d.]+)\s*%?\s*[≤<＜][^\n]{0,18}?[≤<＜]\s*([\d.]+)/);
+  if (m) {
+    let lo = +m[1], hi = +m[2];
+    if (lo > hi) { const t2 = lo; lo = hi; hi = t2; }
+    return { type: 'range', lo: lo, hi: hi };
+  }
+  m = t.match(/[≥>＞]\s*([\d.]+)/);
+  if (m) return { type: 'up', b: +m[1] };      // 越大越好
+  m = t.match(/[≤<＜]\s*([\d.]+)/);
+  if (m) return { type: 'down', b: +m[1] };    // 越小越好
+  return null;
+}
+/* 量纲不一致的特殊项（对比度判定文案用 %，数值用比值） */
+const RANK_CRIT_FIX = { contrast: { type: 'range', lo: 0.60, hi: 0.75 } };
+/* 单行达标余量：正=达标且有余量，越大越优；负=不达标且离门限的距离 */
+function rowMargin(rule, v) {
+  if (!rule || typeof v !== 'number' || !isFinite(v)) return null;
+  if (rule.type === 'up') return (v - rule.b) / Math.abs(rule.b || 1);
+  if (rule.type === 'down') return (rule.b - v) / Math.abs(rule.b || 1);
+  const span = Math.abs(rule.hi - rule.lo) || 1;
+  return Math.min(v - rule.lo, rule.hi - v) / span;
+}
+/* 方案在某维度（或单个指标）内的统计：达标数 / 总数 / 中高色温·中高亮度达标数 / 均值 / 达标余量 / 不达标明细 */
+function dimStat(secs, si) {
+  let pass = 0, total = 0, easy = 0;
+  const fails = [], nums = [];
+  let mSum = 0, mCnt = 0;
+  secs.forEach(g => {
+    const sec = g.sec;
+    const loc = [];
+    g.rows.forEach((row, ri) => {
+      const c = row.cells[si];
+      if (!c || c.na) return;
+      total++;
+      if (typeof c.value === 'number') { nums.push(c.value); loc.push({ v: c.value, ri: ri }); }
+      const cond = lightCond(sec.lights[ri]);
+      // 「中高色温 × 中高亮度」：代表常用工况，用于同达标率时的排名细分
+      const midHi = cond.k != null && cond.k > 3000 && cond.lux != null && cond.lux > 80;
+      if (c.ok) { pass++; if (midHi) easy++; }
+      else fails.push({ label: RANK_SHORT[sec.id] || sec.id, cond: cond.cond || '', ct: cond.ct || '', lx: cond.lx || '', light: sec.lights[ri] });
+    });
+    // 该指标内各工况的达标余量均值（按各自判定门限归一化）
+    let sSum = 0, sCnt = 0;
+    const fix = RANK_CRIT_FIX[sec.id];
+    loc.forEach(x => {
+      const rule = fix || critRule(sec.crits && sec.crits[x.ri] != null ? sec.crits[x.ri] : sec.crit);
+      const m = rowMargin(rule, x.v);
+      if (m != null) { sSum += m; sCnt++; }
+    });
+    if (sCnt) { mSum += sSum / sCnt; mCnt++; }
+  });
+  const mean = nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : null;
+  const margin = mCnt ? mSum / mCnt : null;
+  return { si, pass, total, easy, mean, margin, fails };
+}
 function rankMeanTxt(sec, mean) {
-  if (mean == null) return '';
-  if (sec.id === 'contrast') return (mean * 100).toFixed(2) + '%';
-  if (sec.id === 'os' || sec.id === 'sat' || sec.id === 'luma') return mean.toFixed(2) + '%';
+  if (mean == null) return '—';
+  const id = sec.id;
+  if (id === 'contrast') return (mean * 100).toFixed(2) + '%';
+  if (id === 'os' || id === 'sat' || id === 'luma') return mean.toFixed(2) + '%';
+  if (id === 'mtf50' || id === 'mtf50p' || id === 'rough' || id === 'ca') return mean.toFixed(3);
   return mean.toFixed(2);
 }
-function rankInfo(g, si) {
-  const sec = g.sec;
-  const valid = [];
-  g.rows.forEach((row, ri) => {
-    const c = row.cells[si];
-    if (!c || c.na) return;
-    valid.push({ v: c.value, ok: c.ok, light: sec.lights[ri] });
-  });
-  const nums = valid.map(x => x.v).filter(v => typeof v === 'number');
-  const mean = nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : null;
-  return { mean, pass: valid.filter(x => x.ok).length, total: valid.length };
+function rankPassText(s) {
+  if (!s || !s.total) return '无数据';
+  return s.pass + '/' + s.total + ' 达标';
 }
-function rankCmp(g, a, b) {
-  const sec = g.sec;
-  const ra = a.total ? a.pass / a.total : -1, rb = b.total ? b.pass / b.total : -1;
-  if (rb !== ra) return rb - ra;                       // 达标率降序
-  if (a.mean == null && b.mean == null) return 0;
-  if (a.mean == null) return 1;
-  if (b.mean == null) return -1;
-  if (RANK_LOW_GOOD[sec.id]) return a.mean - b.mean;   // 低优升序
-  if (RANK_RANGE[sec.id]) {                            // 区间型：均值降序（贴近上限代表量足）
-    return b.mean - a.mean;
+function failBrief(fails) {
+  const nm = [];
+  fails.forEach(f => { if (nm.indexOf(f.label) < 0) nm.push(f.label); });
+  return nm.join('、');   // 全量列出，不做「等 N 项」省略
+}
+function failNames(fails) {
+  const b = failBrief(fails);
+  return b ? '不达标项：' + b : '';
+}
+/* 按方案判定（仅用于「方案排名（文字版）」，指标判定明细不受影响）
+   全部工况达标=合格；不达标达到半数及以上=不通过；
+   其余不达标点全部落在「低色温低亮度」=基本通过；其他=不通过 */
+function dimVerdictOf(s) {
+  if (!s || !s.total) return { cls: 'na', txt: '无数据', note: '' };
+  if (!s.fails.length) return { cls: 'ok', txt: '合格', note: '' };
+  if (s.fails.length * 2 >= s.total) {
+    return { cls: 'bad', txt: '不通过', note: failNames(s.fails) };
   }
-  return b.mean - a.mean;                              // 高优降序
+  if (s.fails.every(f => f.cond === '低色温低亮度')) {
+    return { cls: 'warn', txt: '基本通过', note: '不达标项：' + failBrief(s.fails) + '（仅低色温低亮度）' };
+  }
+  return { cls: 'bad', txt: '不通过', note: failNames(s.fails) };
 }
-function rankLine(g, labels, idx) {
-  const sec = g.sec;
-  const infos = idx.map(si => ({ si, ...rankInfo(g, si) }));
-  const sorted = infos.slice().sort((x, y) => rankCmp(g, x, y));
-  return sorted.map(it => {
-    const nm = labels[it.si];
-    if (!it.total) return nm + '（暂无数据）';
-    const info = it.mean != null ? '（均值' + rankMeanTxt(sec, it.mean) + '，达标率' + it.pass + '/' + it.total + '）'
-      : '（达标率' + it.pass + '/' + it.total + '）';
-    return nm + info;
-  }).join('＞');
-}
-function rankGroupHtml(gp, grid, labels, idx) {
-  const secs = gp.secs.map(sid => grid.find(x => x.sec.id === sid)).filter(Boolean);
-  // 维度总排名：维度内达标率总和降序
-  const totals = idx.map(si => {
-    let p = 0, t = 0;
-    secs.forEach(g => { const ri = rankInfo(g, si); p += ri.pass; t += ri.total; });
-    return { si, p, t };
+/* 维度内排名：达标率降序 → 同率时「中高色温·中高亮度」达标数多者靠前
+   → 再同则比「达标余量」（亮度均匀性越大越好、色彩均匀性越小越好，按门限归一化） */
+function dimRank(stats) {
+  return stats.slice().sort((a, b) => {
+    const ra = a.total ? a.pass / a.total : -1, rb = b.total ? b.pass / b.total : -1;
+    if (rb !== ra) return rb - ra;
+    if (b.easy !== a.easy) return b.easy - a.easy;
+    if (a.margin != null && b.margin != null && Math.abs(b.margin - a.margin) > 1e-9) return b.margin - a.margin;
+    return b.total - a.total;
   });
-  const sorted = totals.slice().sort((a, b) => (b.t ? b.p / b.t : -1) - (a.t ? a.p / a.t : -1));
-  const head = sorted.map(it => labels[it.si]).join('＞');
-  const lines = secs.map((g, k) => '<div class="rk-line"><span class="rk-nm">' + esc(RANK_SHORT[g.sec.id]) + '</span>' + esc(rankLine(g, labels, idx)) + '</div>').join('');
-  return '<tr><td class="rk-dim">' + esc(gp.title) + '</td><td><div class="rk-head">排名：' + esc(head) + '</div>' + lines + '</td></tr>';
+}
+/* 单个指标内：把不达标工况按「色温（亮度档…）」压缩描述，如「低色温（低/中亮度）、中色温（低亮度）不达标」 */
+function failCondText(fails) {
+  const byCt = {};
+  fails.forEach(f => {
+    if (!f.ct || !f.lx) return;
+    (byCt[f.ct] = byCt[f.ct] || []).push(f.lx);
+  });
+  const parts = [];
+  ['低色温', '中色温', '高色温'].forEach(ct => {
+    const arr = byCt[ct];
+    if (!arr) return;
+    const lx = ['低亮度', '中亮度', '高亮度'].filter(x => arr.indexOf(x) >= 0);
+    if (lx.length === 3) parts.push(ct + '全亮度');
+    else parts.push(ct + lx.map(x => x.replace('亮度', '')).join('/') + '亮度');
+  });
+  return parts.join('、');
+}
+/* 指标行括号内容：**仅部分达标**时描述具体是哪些色温×亮度档未达标 */
+function metricNote(s) {
+  if (!s || !s.fails || !s.fails.length) return '';
+  if (s.pass === 0 || s.pass >= s.total) return '';
+  const t = failCondText(s.fails);
+  return t ? '不达标工况：' + t : '';
+}
+/* 排名行（单行成句）：total = 【第N名】x/y 达标；dim = 【第N名】判定（x/y 达标），不达标项：… */
+function rankRowCells(secs, idx, mode) {
+  const stats = idx.map(si => dimStat(secs, si));
+  const rankOf = {};
+  dimRank(stats).forEach((s, k) => { rankOf[s.si] = k + 1; });
+  return idx.map(si => {
+    const s = stats.find(x => x.si === si);
+    const n = rankOf[si] || 0;
+    const rank = '<b class="rk-rank' + (n === 1 ? ' top' : '') + '">【第' + n + '名】</b>';
+    if (mode === 'total') {
+      return '<td class="rk-cell"><div class="rk-c1">' + rank +
+        '<span class="rk-cpass">' + esc(rankPassText(s)) + '</span></div></td>';
+    }
+    const v = dimVerdictOf(s);
+    return '<td class="rk-cell"><div class="rk-c1">' + rank +
+      '<span class="rk-cpass">此维度</span>' +
+      '<span class="rk-verdict ' + v.cls + '">' + esc(v.txt) + '</span>' +
+      '<span class="rk-cpass">（' + esc(rankPassText(s)) + '）' +
+      (v.note ? '，' + esc(v.note) + '。' : '。') + '</span></div></td>';
+  }).join('');
+}
+/* 指标行（单行成句）：均值 x，x/y 达标（不达标工况：…）／满足标准，均值 x */
+function metricRowCells(g, idx) {
+  return idx.map(si => {
+    const s = dimStat([g], si);
+    const note = metricNote(s);
+    const val = esc(rankMeanTxt(g.sec, s.mean));
+    if (s.total && s.pass === s.total) {
+      return '<td class="rk-cell"><div class="rk-c1"><b class="rk-ok">满足标准</b>' +
+        '<span class="rk-okm">，均值 ' + val + '</span></div></td>';
+    }
+    return '<td class="rk-cell"><div class="rk-c1"><span class="rk-val"><span class="rk-u">均值</span> ' + val + '</span>' +
+      '<span class="rk-cpass">，' + esc(rankPassText(s)) + '</span>' +
+      (note ? '<span class="rk-cnote">（' + esc(note) + '）</span>' : '') + '</div></td>';
+  }).join('');
+}
+function rankSecsOf(gp, grid) {
+  return gp.secs.map(sid => grid.find(x => x.sec.id === sid)).filter(Boolean);
+}
+function rankOverallSecs(grid) {
+  return RANK_GROUPS.reduce((acc, gp) => acc.concat(rankSecsOf(gp, grid)), []);
 }
 function buildConclusionHtml() {
   const { labels, grid } = state.analyzed;
   const idx = selIndices();
   if (!idx.length) return '<div class="conc-block"><b class="rp-sub">方案排名（文字版）</b><div class="empty-note" style="margin-top:8px">未勾选任何方案列，无法生成排名。</div></div>';
-  const rowsHtml = RANK_GROUPS.map(gp => rankGroupHtml(gp, grid, labels, idx)).join('');
+  const head = '<tr><th class="rk-hdim">维度</th><th class="rk-hsub">指标</th>' +
+    idx.map(si => '<th><span class="sc-dot" style="background:' + PALETTE[si % PALETTE.length] + '"></span>' + esc(labels[si]) + '</th>').join('') + '</tr>';
+  const rows = [];
+  // 客观维度总排名（17 项合计）
+  rows.push('<tr><td class="rk-dim">客观维度<br>总排名</td><td class="rk-sub">17 项合计</td>' +
+    rankRowCells(rankOverallSecs(grid), idx, 'total') + '</tr>');
+  // 各维度排名 + 该维度下各指标
+  RANK_GROUPS.forEach(gp => {
+    const secs = rankSecsOf(gp, grid);
+    if (!secs.length) return;
+    rows.push('<tr><td class="rk-dim" rowspan="' + (secs.length + 1) + '">' + esc(gp.title) + '</td>' +
+      '<td class="rk-sub">维度排名</td>' + rankRowCells(secs, idx, 'dim') + '</tr>');
+    secs.forEach(g => rows.push('<tr><td class="rk-sub">' + esc(RANK_SHORT[g.sec.id]) + '</td>' +
+      metricRowCells(g, idx) + '</tr>'));
+  });
   return '<div class="conc-block"><b class="rp-sub">二、方案排名（文字版）</b>' +
-    '<table class="rank-table"><thead><tr><th>维度</th><th>排名明细（达标率优先，同率按均值）</th></tr></thead>' +
-    '<tbody>' + rowsHtml + '</tbody></table></div>';
+    '<table class="rank-table" style="min-width:' + (240 + idx.length * 200) + 'px"><thead>' + head + '</thead>' +
+    '<tbody>' + rows.join('') + '</tbody></table>' +
+    '<div class="rk-tip">判定规则：全部工况达标＝合格；不达标点全部落在「低色温低亮度」＝基本通过；不达标达到半数及以上＝该方案在该维度直接判定不通过。排名先比达标率，同率时「中高色温·中高亮度」达标数多者靠前，再相同则比「达标余量」（按各指标自己的判定门限归一化后平均：越大越优的看超出量，越小越优的看剩余量，区间型看离最近边界的距离）；指标行只列出均值与达标率、不排名次，「括号」仅在部分达标时注明未达标的色温×亮度档。</div></div>';
 }
 function renderReport() {
   const el = $('#report-preview');
@@ -3842,11 +4003,7 @@ function renderReport() {
     return;
   }
   el.innerHTML = picker +
-    '<div class="rp-line" style="margin:10px 0"><b>报告内容：</b>每个方案列为一个整体，汇总其在 17 项指标判定中的全部表现，并横向对比各方案总通过率。</div>' +
-    '<div class="rp-line" style="margin:12px 0 8px"><b>一、方案总通过率对比：</b></div>' +
-    '<div class="chart-wrap chart-card"><div id="chart-scheme" style="width:100%;height:' + Math.max(200, stats.length * 34 + 44) + 'px"></div><div class="chart-fallback" id="chart-scheme-fallback"></div></div>' +
-    buildConclusionHtml() +
-    '<div class="rp-line" style="margin:12px 0 8px"><b>三、各方案合格率详细图表：</b></div>' +
+    '<div class="rp-line" style="margin:12px 0 8px"><b>一、各方案合格率详细图表：</b></div>' +
     '<div class="scheme-grid">' + stats.map((s, si) => {
       const cls = s.total ? (s.rate >= 80 ? 'ok' : s.rate >= 50 ? 'part' : 'bad') : 'na';
       const bars = s.secRates.map((r, gi) => {
@@ -3860,8 +4017,8 @@ function renderReport() {
         '<div class="sc-sums"><span>检测项 ' + s.total + '</span><span>合格 ' + s.pass + '</span><span class="bad">不合格 ' + s.fail + '</span></div>' +
         '<div class="sc-bars">' + bars + '</div></div>';
     }).join('') + '</div>' +
-    '<div class="rp-line" style="margin-top:12px"><b>插入飞书文档：</b>点击「复制报告摘要」复制方案排名表格，直接粘贴到飞书文档测试报告后仍可编辑修改；点击「完整测试报告（链接）」打开并下载含方案对比、合格率图表与判定明细的完整报告，在报告中插入其链接或附件。</div>';
-  renderSchemeChart(stats);
+    buildConclusionHtml() +
+    '<div class="rp-line" style="margin-top:12px"><b>插入飞书文档：</b>点击「复制报告摘要」复制方案排名表格，直接粘贴到飞书文档测试报告后仍可编辑修改；点击「完整测试报告（链接）」打开并下载含合格率图表与判定明细的完整报告，在报告中插入其链接或附件。</div>';
 }
 function buildDetailHtml() {
   const { labels, grid } = state.analyzed;
@@ -3874,13 +4031,7 @@ function buildDetailHtml() {
   const colOf = r => r >= 80 ? '#147A55' : r >= 50 ? '#B96A0F' : '#CE2B28';
   const dot = si => '<i class="dot" style="background:' + PALETTE[si % PALETTE.length] + '"></i>';
 
-  /* 一、方案总通过率对比 */
-  const rateRows = stats.map((s, si) =>
-    '<div class="hb"><span class="hn">' + dot(si) + esc(s.label) + '</span>' +
-    '<span class="ht"><b class="hf" style="width:' + (s.total ? s.rate : 0) + '%;background:' + PALETTE[si % PALETTE.length] + '"></b></span>' +
-    '<span class="hv" style="color:' + colOf(s.rate) + '">' + (s.total ? s.rate + '%' : '无数据') + '</span></div>').join('');
-
-  /* 二、各方案合格率详细图表（按指标逐条） */
+  /* 一、各方案合格率详细图表（按指标逐条，总通过率对比图已移除） */
   const cards = stats.map((s, si) => {
     const bars = s.secRates.map((r, gi) => {
       const pct = r.t ? Math.round(r.p / r.t * 1000) / 10 : 0;
@@ -3971,13 +4122,8 @@ function buildDetailHtml() {
     '<header><h1>系统图像 IQ 分析工作台 · 测试报告</h1>' +
     '<p>方案：' + esc(selLbs.join('　/　')) + '</p>' +
     '<p>生成时间：' + fmtStamp() + '　·　检测项 ' + st.total + '　合格 ' + st.pass + '　不合格 ' + st.fail + '　整体通过率 ' + st.rate + '%</p></header>' +
-    '<div class="sums"><div class="sum"><b>检测项总数</b><span>' + st.total + '</span></div>' +
-    '<div class="sum"><b>合格项</b><span>' + st.pass + '</span></div>' +
-    '<div class="sum"><b>不合格项</b><span>' + st.fail + '</span></div>' +
-    '<div class="sum"><b>整体通过率</b><span>' + st.rate + '%</span></div></div>' +
-    '<h2>一、方案总通过率对比</h2><div class="hbar">' + rateRows + '</div>' +
-    '<h2>二、各方案合格率详细图表</h2><div class="cards">' + cards + '</div>' +
-    '<h2>三、指标判定明细</h2>' + rowsHtml +
+    '<h2>一、各方案合格率详细图表</h2><div class="cards">' + cards + '</div>' +
+    '<h2>二、指标判定明细</h2>' + rowsHtml +
     '<footer>本报告由「系统图像 IQ 分析工作台」生成，判定口径以《指标判定标准库》为准。</footer>' +
     '</body></html>';
 }
@@ -3994,36 +4140,88 @@ function openDetailLink() {
   const opened = window.open(url, '_blank');
   toast('完整报告已生成：' + (opened ? '新窗口已打开，且已下载「' + name + '」' : '已下载「' + name + '」') + '，含方案对比、合格率图表与判定明细，可作为飞书文档附件插入');
 }
+/* 复制用富文本单元格：飞书粘贴会丢掉 div/margin，所以格内统一用 <br> 换行 + 行高 */
+function cellInline(lines) {
+  return '<td style="padding:10px 12px;vertical-align:top;font-size:12px;line-height:1.9;'
+    + 'font-family:Microsoft YaHei,PingFang SC,sans-serif">'
+    + '<p style="margin:0;line-height:1.9">' + lines.join('<br>') + '</p></td>';
+}
+function rankCellsInline(secs, labels, idx, mode) {
+  const stats = idx.map(si => dimStat(secs, si));
+  const rankOf = {};
+  dimRank(stats).forEach((s, k) => { rankOf[s.si] = k + 1; });
+  return idx.map(si => {
+    const s = stats.find(x => x.si === si);
+    const n = rankOf[si] || 0;
+    const rank = '<b>【第' + n + '名】</b>';
+    if (mode === 'total') {
+      return cellInline([rank + ' ' + esc(rankPassText(s))]);
+    }
+    const v = dimVerdictOf(s);
+    const col = v.cls === 'ok' ? '#147A55' : v.cls === 'warn' ? '#B96A0F' : v.cls === 'bad' ? '#CE2B28' : '#8AA0B4';
+    return cellInline([rank + '此维度' +
+      '<span style="color:' + col + ';font-weight:bold">' + esc(v.txt) + '</span>' +
+      '（' + esc(rankPassText(s)) + '）' +
+      (v.note ? '，<span style="color:#8AA0B4">' + esc(v.note) + '。</span>' : '。')]);
+  }).join('');
+}
+function metricCellsInline(g, idx) {
+  return idx.map(si => {
+    const s = dimStat([g], si);
+    const note = metricNote(s);
+    const val = esc(rankMeanTxt(g.sec, s.mean));
+    if (s.total && s.pass === s.total) {
+      return cellInline(['<b style="color:#147A55">满足标准</b><span style="color:#44586C">，均值 ' + val + '</span>']);
+    }
+    return cellInline(['均值 ' + val + '，' + esc(rankPassText(s)) +
+      (note ? '<span style="font-size:11px;color:#8AA0B4">（' + esc(note) + '）</span>' : '')]);
+  }).join('');
+}
 function rankTableHtml(labels, idx, grid) {
-  const thS = 'background:#E8F0F8;padding:9px 12px;text-align:left;font-weight:700';
-  let rows = '<tr><th style="' + thS + '">维度</th><th style="' + thS + '">指标</th><th style="' + thS + '">排名（＞连接，按达标率优先、同率比均值）</th></tr>';
+  const thS = 'background:#E8F0F8;padding:9px 11px;text-align:left;font-weight:bold;font-size:12px;line-height:1.7';
+  const tdDim = 'padding:9px 11px;vertical-align:middle;background:#F4F8FC;font-weight:bold;text-align:center;color:#1B5E8C;width:86px;line-height:1.7';
+  const tdSub = 'padding:9px 11px;vertical-align:middle;font-weight:bold;color:#44586C;width:104px;line-height:1.7';
+  let rows = '<tr><th style="' + thS + ';width:86px">维度</th><th style="' + thS + ';width:104px">指标</th>' +
+    idx.map(si => '<th style="' + thS + '">' + esc(labels[si]) + '</th>').join('') + '</tr>';
+  rows += '<tr><td style="' + tdDim + '">客观维度<br>总排名</td><td style="' + tdSub + '">17 项合计</td>' +
+    rankCellsInline(rankOverallSecs(grid), labels, idx, 'total') + '</tr>';
   RANK_GROUPS.forEach(gp => {
-    const secs = gp.secs.map(sid => grid.find(x => x.sec.id === sid)).filter(Boolean);
-    const totals = idx.map(si => {
-      let p = 0, t = 0;
-      secs.forEach(g => { const ri = rankInfo(g, si); p += ri.pass; t += ri.total; });
-      return { si, p, t };
-    });
-    const sorted = totals.slice().sort((a, b) => (b.t ? b.p / b.t : -1) - (a.t ? a.p / a.t : -1));
-    const rs = secs.length + 1;
-    rows += '<tr><td rowspan="' + rs + '" style="background:#F4F8FC;font-weight:700;vertical-align:middle;text-align:center;padding:9px 8px;color:#1B5E8C">' + esc(gp.title) + '</td>' +
-      '<td style="padding:9px 12px"><b>维度总排名</b></td><td style="padding:9px 12px;font-weight:700">' + esc(sorted.map(it => labels[it.si]).join('＞')) + '</td></tr>';
-    secs.forEach(g => rows += '<tr><td style="padding:9px 12px;font-weight:700;white-space:nowrap;color:#44586C">' + esc(RANK_SHORT[g.sec.id]) + '</td><td style="padding:9px 12px;color:#23374D">' + esc(rankLine(g, labels, idx)) + '</td></tr>');
+    const secs = rankSecsOf(gp, grid);
+    if (!secs.length) return;
+    rows += '<tr><td style="' + tdDim + '" rowspan="' + (secs.length + 1) + '">' + esc(gp.title) + '</td>' +
+      '<td style="' + tdSub + '">维度排名</td>' + rankCellsInline(secs, labels, idx, 'dim') + '</tr>';
+    secs.forEach(g => rows += '<tr><td style="' + tdSub + '">' + esc(RANK_SHORT[g.sec.id]) + '</td>' +
+      metricCellsInline(g, idx) + '</tr>');
   });
-  return '<table border="1" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-family:Microsoft YaHei,sans-serif;font-size:12px;border-color:#C7D4E0">' + rows + '</table>';
+  return '<table border="1" cellspacing="0" cellpadding="6" width="100%" style="border-collapse:collapse;font-family:Microsoft YaHei,sans-serif;font-size:12px;line-height:1.85;border-color:#C7D4E0;width:100%">' + rows + '</table>';
 }
 function rankTableText(labels, idx) {
+  const grid = state.analyzed.grid;
   const lines = [];
+  lines.push(['维度', '指标'].concat(idx.map(si => labels[si])).join('\t'));
+  const dimCells = (secs, mode) => {
+    const stats = idx.map(si => dimStat(secs, si));
+    const rankOf = {};
+    dimRank(stats).forEach((s, k) => { rankOf[s.si] = k + 1; });
+    return idx.map(si => {
+      const s = stats.find(x => x.si === si);
+      const v = dimVerdictOf(s);
+      if (mode === 'total') return '【第' + (rankOf[si] || 0) + '名】' + rankPassText(s);
+      return '【第' + (rankOf[si] || 0) + '名】此维度' + v.txt + '（' + rankPassText(s) + '）' + (v.note ? '，' + v.note + '。' : '。');
+    }).join('\t');
+  };
+  const metricCells = g => idx.map(si => {
+    const s = dimStat([g], si);
+    const note = metricNote(s);
+    if (s.total && s.pass === s.total) return '满足标准，均值 ' + rankMeanTxt(g.sec, s.mean);
+    return '均值 ' + rankMeanTxt(g.sec, s.mean) + '，' + rankPassText(s) + (note ? '（' + note + '）' : '');
+  }).join('\t');
+  lines.push(['客观维度总排名', '17 项合计', dimCells(rankOverallSecs(grid), 'total')].join('\t'));
   RANK_GROUPS.forEach(gp => {
-    const secs = gp.secs.map(sid => state.analyzed.grid.find(x => x.sec.id === sid)).filter(Boolean);
-    const totals = idx.map(si => {
-      let p = 0, t = 0;
-      secs.forEach(g => { const ri = rankInfo(g, si); p += ri.pass; t += ri.total; });
-      return { si, p, t };
-    });
-    const sorted = totals.slice().sort((a, b) => (b.t ? b.p / b.t : -1) - (a.t ? a.p / a.t : -1));
-    lines.push(gp.title + '｜维度总排名：' + sorted.map(it => labels[it.si]).join('＞'));
-    secs.forEach(g => lines.push(gp.title + '｜' + RANK_SHORT[g.sec.id] + '：' + rankLine(g, labels, idx)));
+    const secs = rankSecsOf(gp, grid);
+    if (!secs.length) return;
+    lines.push([gp.title, '维度排名', dimCells(secs, 'dim')].join('\t'));
+    secs.forEach(g => lines.push([gp.title, RANK_SHORT[g.sec.id], metricCells(g)].join('\t')));
   });
   return lines.join('\n');
 }
@@ -4749,117 +4947,807 @@ window.__TOOLS['bench'] = function(){
     URL.revokeObjectURL(a.href);
   }
 
-  /* ===== SFR 锐度判定（参考级） ===== */
+  /* ===== SFR 锐度判定（ISO 12233 链路） ===== */
   var sfrItems=[],sfrCur=-1,sfrCanvas=null,sfrCtx=null,sfrDrag=null;
 
-  function sfrLin(v){v=v/255;return v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4);}
+  /* ==========================================================================
+     斜刃 SFR / MTF 核心 —— 12-ISO-SFR-py/sfr/sfr_core.py 的逐段 JS 移植
+     链路：逐行最小二乘阶跃拟合 -> 5 阶多项式拟合刃线 -> 沿法向 alpha 倍超采样
+           分箱 -> 非均匀照度校正 -> 中心差分 LSF -> modified apodization ->
+           峰值对齐 + Hann 窗 -> DFT -> MTF
+     与 Python 版同一套参数语义（alpha、bin phase），不做取舍。
+     ========================================================================== */
 
-  // 对单通道二维ROI逐行求50%边缘亚像素位置并线性拟合，返回 a,b 与残差RMS(px)
-  function sfrEdgeFit(vals,W,x0,y0,x1,y1){
-    // 全局暗/亮平台(10/90 分位)，避免逐行 min/max 被噪声拉偏
-    var all=[];
-    for(var y=y0;y<y1;y++)for(var x=x0;x<x1;x++)all.push(vals[y*W+x]);
-    all.sort(function(a,b){return a-b;});
-    var p10=all[Math.floor(all.length*0.10)],p90=all[Math.floor(all.length*0.90)];
-    var thr=(p10+p90)/2;
-    var ys=[],xe=[];
-    for(y=y0;y<y1;y++){
-      var hit=-1,gmax=-1;
-      for(x=x0;x<x1-1;x++){
-        var va=vals[y*W+x],vb=vals[y*W+x+1];
-        if((va-thr)*(vb-thr)<=0&&va!==vb){
-          var g=Math.abs(vb-va);if(g>gmax){hit=x;gmax=g;}
+  var SFR_ALPHA = 11.0;        // 超采样因子（ISO 用 4，过粗；与 Python 默认一致）
+  var SFR_BIN_PHASE = 0.396;   // 分箱栅格亚像素相位（对 Imatest 反解，勿随意改）
+  var SFR_MOD_APOD = true;     // modified apodization 降噪
+  var SFR_NONUNIFORM = true;   // 非均匀照度校正
+  var SFR_MAX_NBIN = 16384;    // 安全上界，避免超宽框导致数组过大
+
+  /* ---------- 通用小工具 ---------- */
+
+  function sfrPolyEval(coef, j, jmid, jhalf) {
+    var t = (j - jmid) / jhalf;
+    var acc = coef[0] + coef[1] * t, tp = t, p;
+    for (p = 2; p < coef.length; p++) { tp *= t; acc += coef[p] * tp; }
+    return acc;
+  }
+
+  /* 正规方程 + 高斯消元（列主元）。与 Python _solve_poly5 同一消元顺序，
+     退化时返回 null（调用方回退到直线）。 */
+  function sfrPolyFit(jj, cen, n, order, jmid, jhalf) {
+    var np = order + 1, i, p, q, r;
+    var t = new Float64Array(n);
+    for (i = 0; i < n; i++) t[i] = (jj[i] - jmid) / jhalf;
+    var tp = [new Float64Array(n)];
+    for (i = 0; i < n; i++) tp[0][i] = 1;
+    for (p = 1; p < np; p++) {
+      var v = new Float64Array(n);
+      for (i = 0; i < n; i++) v[i] = tp[p - 1][i] * t[i];
+      tp.push(v);
+    }
+    var A = [];
+    for (p = 0; p < np; p++) {
+      var row = new Float64Array(np + 1);
+      for (q = 0; q < np; q++) {
+        var s = 0;
+        for (i = 0; i < n; i++) s += tp[p][i] * tp[q][i];
+        row[q] = s;
+      }
+      var s2 = 0;
+      for (i = 0; i < n; i++) s2 += tp[p][i] * cen[i];
+      row[np] = s2;
+      A.push(row);
+    }
+    for (p = 0; p < np; p++) {
+      var mx = p;
+      for (q = p + 1; q < np; q++) if (Math.abs(A[q][p]) > Math.abs(A[mx][p])) mx = q;
+      if (Math.abs(A[mx][p]) < 1e-12) return null;
+      if (mx !== p) { var tmp = A[p]; A[p] = A[mx]; A[mx] = tmp; }
+      for (q = p + 1; q < np; q++) {
+        var fac = A[q][p] / A[p][p];
+        for (r = p; r <= np; r++) A[q][r] -= fac * A[p][r];
+      }
+    }
+    var coef = new Float64Array(np);
+    for (p = np - 1; p >= 0; p--) {
+      var acc = A[p][np];
+      for (q = p + 1; q < np; q++) acc -= A[p][q] * coef[q];
+      coef[p] = acc / A[p][p];
+    }
+    return coef;
+  }
+
+  function sfrFlipH(f, h, w) {
+    var o = new Float64Array(h * w);
+    for (var y = 0; y < h; y++) {
+      var b = y * w;
+      for (var x = 0; x < w; x++) o[b + x] = f[b + w - 1 - x];
+    }
+    return o;
+  }
+
+  function sfrFlipV(f, h, w) {
+    var o = new Float64Array(h * w);
+    for (var y = 0; y < h; y++) {
+      var s = (h - 1 - y) * w, d = y * w;
+      for (var x = 0; x < w; x++) o[d + x] = f[s + x];
+    }
+    return o;
+  }
+
+  /* 方框平滑（沿 x，窗口夹在 [0,w-1]，除以实际样本数）。前缀和实现，
+     与 Python 逐 tap 累加等价到 1e-15。 */
+  function sfrBoxcar(f, h, w, m) {
+    var hw = Math.floor(m / 2);
+    if (hw < 1) return new Float64Array(f);
+    var cs = new Float64Array(w + 1), o = new Float64Array(h * w);
+    for (var y = 0; y < h; y++) {
+      var b = y * w, i;
+      for (i = 0; i < w; i++) cs[i + 1] = cs[i] + f[b + i];
+      for (i = 0; i < w; i++) {
+        var a = i - hw < 0 ? 0 : i - hw;
+        var e = i + hw > w - 1 ? w - 1 : i + hw;
+        o[b + i] = (cs[e + 1] - cs[a]) / (e - a + 1);
+      }
+    }
+    return o;
+  }
+
+  /* 逐行边缘位置：最小二乘阶跃拟合
+     令 p=(v-lo)/(hi-lo)，使 sum_{x<t}(p-0)^2 + sum_{x>=t}(p-1)^2 最小的 t
+     等价于最大化 g(t)=t-2*cumsum(p)[t]；再对 g 做抛物线插值细化。 */
+  function sfrCentroids(f, h, w, smooth) {
+    var m = 1;
+    if (smooth) {
+      m = Math.floor(w / 32);
+      if (m < 3) m = 3;
+      if (m > 16) m = 16;
+    }
+    var s = m > 1 ? sfrBoxcar(f, h, w, m) : f;
+    var n = Math.floor(w / 10);
+    if (n < 2) n = 2;
+    var c = new Float64Array(h), ok = new Uint8Array(h), g = new Float64Array(w);
+    for (var y = 0; y < h; y++) {
+      var b = y * w, lo = 0, hi = 0, i, x;
+      for (i = 0; i < n; i++) { lo += s[b + i]; hi += s[b + w - n + i]; }
+      lo /= n; hi /= n;
+      var span = hi - lo;
+      // 该行对比度太低则跳过。Python 的门限是 1e-12（只挡完全平的行），实测在
+      // 均匀背景带上会被噪声抬到 1–2 级而误判为有效行，刃心乱跳；这里提高到 8/255
+      // （整块 ROI 的门限是 16/255，正常刃行远高于此），只影响退化行。
+      if (Math.abs(span) < 8) continue;
+      var acc = 0, best = -1e300, bestk = 0;
+      for (x = 0; x < w; x++) {
+        acc += (s[b + x] - lo) / span;
+        var gv = x - 2 * acc;
+        g[x] = gv;
+        if (gv > best) { best = gv; bestk = x; }          // 首个最大值（严格 >）
+      }
+      var cc = bestk;
+      if (bestk > 0 && bestk < w - 1) {
+        var y0 = g[bestk - 1], y1 = g[bestk], y2 = g[bestk + 1];
+        var den = y0 - 2 * y1 + y2;
+        if (Math.abs(den) > 1e-12) cc += 0.5 * (y0 - y2) / den;
+      }
+      c[y] = cc;
+      if (cc >= 1 && cc <= w - 2) ok[y] = 1;
+    }
+    return { c: c, ok: ok };
+  }
+
+  function sfrLongestRun(ok) {
+    var best = 0, r0 = 0, r1 = -1, start = -1;
+    for (var j = 0; j < ok.length; j++) {
+      if (ok[j]) {
+        if (start < 0) start = j;
+        if (j - start + 1 > best) { best = j - start + 1; r0 = start; r1 = j; }
+      } else start = -1;
+    }
+    return best > 0 ? { r0: r0, r1: r1, len: best } : null;
+  }
+
+  /* ---------- FFT / DFT ---------- */
+
+  function sfrFft(re, im, n, inverse) {
+    var i, j, k, len, half, step, idx, cr, ci, tr, ti, ur, ui, vr, vi;
+    for (i = 1, j = 0; i < n; i++) {
+      var bit = n >> 1;
+      for (; j & bit; bit >>= 1) j ^= bit;
+      j ^= bit;
+      if (i < j) { tr = re[i]; re[i] = re[j]; re[j] = tr; ti = im[i]; im[i] = im[j]; im[j] = ti; }
+    }
+    var cosT = new Float64Array(n / 2), sinT = new Float64Array(n / 2);
+    for (i = 0; i < n / 2; i++) {
+      var a = (inverse ? 2 : -2) * Math.PI * i / n;
+      cosT[i] = Math.cos(a); sinT[i] = Math.sin(a);
+    }
+    for (len = 2; len <= n; len <<= 1) {
+      half = len >> 1; step = n / len;
+      for (i = 0; i < n; i += len) {
+        for (k = 0; k < half; k++) {
+          idx = k * step; cr = cosT[idx]; ci = sinT[idx];
+          ur = re[i + k]; ui = im[i + k];
+          vr = re[i + k + half] * cr - im[i + k + half] * ci;
+          vi = re[i + k + half] * ci + im[i + k + half] * cr;
+          re[i + k] = ur + vr; im[i + k] = ui + vi;
+          re[i + k + half] = ur - vr; im[i + k + half] = ui - vi;
         }
       }
-      if(hit>=0){
-        va=vals[y*W+hit];vb=vals[y*W+hit+1];
-        var t=(thr-va)/(vb-va+1e-9);ys.push(y);xe.push(hit+t);
-      }
     }
-    if(ys.length<5)return null;
-    // 最小二乘 x=a*y+b
-    var n=ys.length,sy=0,syy=0,sx=0,sxy=0;
-    for(var k=0;k<n;k++){sy+=ys[k];syy+=ys[k]*ys[k];sx+=xe[k];sxy+=ys[k]*xe[k];}
-    var den=n*syy-sy*sy,a,b;
-    if(Math.abs(den)<1e-9)return null;
-    a=(n*sxy-sy*sx)/den;b=(sx-a*sy)/n;
-    var ss=0;for(k=0;k<n;k++){var r=xe[k]-(a*ys[k]+b);ss+=r*r;}
-    return {a:a,b:b,resid:Math.sqrt(ss/n),n:n};
+    if (inverse) for (i = 0; i < n; i++) { re[i] /= n; im[i] /= n; }
   }
 
-  // 由LSF幅度谱求MTF50/MTF50P（DFT采样）
-  function sfrMtf(lsf,osr){
-    var N=256,win=[];
-    for(var i=0;i<lsf.length;i++){var w=0.54-0.46*Math.cos(2*Math.PI*i/(lsf.length-1));win.push(lsf[i]*w);}
-    // 直流归一化：LSF 有符号积分（台阶面积），使低频 MTF(0)=1；不用绝对值和（会把整谱压低、MTF50 左偏）
-    var dc=win.reduce(function(s,v){return s+v;},0);
-    if(dc<1e-6)dc=1e-6;
-    function amp(f){
-      var re=0,im=0,ang=2*Math.PI*f/osr;
-      for(var n=0;n<win.length;n++){var p=ang*n;re+=win[n]*Math.cos(p);im-=win[n]*Math.sin(p);}
-      return Math.sqrt(re*re+im*im)/dc;
+  /* |DFT| at k=0..outN-1 of x (length N)，Bluestein 任意长度，等价于 np.fft.rfft。 */
+  function sfrDftMag(x, N, outN) {
+    var M = 1;
+    while (M < 2 * N - 1) M <<= 1;
+    var ar = new Float64Array(M), ai = new Float64Array(M);
+    var br = new Float64Array(M), bi = new Float64Array(M);
+    var twoN = 2 * N, n, i, q, ang, c, s;
+    for (n = 0; n < N; n++) {
+      q = (n * n) % twoN;                       // 周期 2N，整数取模保持精度
+      ang = Math.PI * q / N;
+      c = Math.cos(ang); s = Math.sin(ang);
+      ar[n] = x[n] * c; ai[n] = -x[n] * s;      // a[n] = x[n]·e^{-iπn²/N}
+      if (n > 0) { br[n] = c; bi[n] = s; br[M - n] = c; bi[M - n] = s; }  // b[m]=e^{+iπm²/N}
     }
-    var peak=0,prevF=0,prevA=1;
-    var MTF50=null,MTF50P=null;
-    for(var f=0.02;f<=1.0;f+=0.01){
-      var a=amp(f);if(a>peak)peak=a;
+    br[0] = 1; bi[0] = 0;
+    sfrFft(ar, ai, M, false);
+    sfrFft(br, bi, M, false);
+    for (i = 0; i < M; i++) {
+      var tr = ar[i] * br[i] - ai[i] * bi[i], ti = ar[i] * bi[i] + ai[i] * br[i];
+      ar[i] = tr; ai[i] = ti;
     }
-    for(var f=0.02;f<=1.0;f+=0.01){
-      var a=amp(f);
-      if(MTF50===null&&prevA>=0.5&&a<0.5){MTF50=prevF+(f-prevF)*(prevA-0.5)/(prevA-a+1e-9);}
-      if(MTF50P===null&&prevA>=0.5*peak&&a<0.5*peak){MTF50P=prevF+(f-prevF)*(prevA-0.5*peak)/(prevA-a+1e-9);}
-      prevF=f;prevA=a;
+    sfrFft(ar, ai, M, true);
+    var mag = new Float64Array(outN);
+    for (n = 0; n < outN; n++) {
+      q = (n * n) % twoN; ang = Math.PI * q / N;
+      c = Math.cos(ang); s = Math.sin(ang);
+      var vr = ar[n] * c + ai[n] * s, vi = ai[n] * c - ar[n] * s;
+      mag[n] = Math.sqrt(vr * vr + vi * vi);
     }
-    // Oversharpening 锐化量（Imatest 口径）：100%×(MTF(f_eql)-1)，f_eql=0.15 c/p（MTF50≥0.2 时，即 0.3×Nyquist）
-    var sharp=100*(amp(0.15)-1);
-    return {mtf50:MTF50,mtf50p:MTF50P,peak:peak,sharp:sharp};
+    return mag;
   }
 
-  function sfrEval(it){
-    if(!it.roi)return null;
-    var W=it.W,H=it.H;
-    var rx0=Math.round(it.roi.x*W),rx1=Math.round((it.roi.x+it.roi.w)*W);
-    var ry0=Math.round(it.roi.y*H),ry1=Math.round((it.roi.y+it.roi.h)*H);
-    var npx=W*H,yLin=new Float64Array(npx);
-    for(var i=0;i<it.data.length;i+=4){
-      var r=sfrLin(it.data[i]),g=sfrLin(it.data[i+1]),b=sfrLin(it.data[i+2]);
-      yLin[(i/4)|0]=0.2126*r+0.7152*g+0.0722*b;
-    }
-    var fit=sfrEdgeFit(yLin,W,rx0,ry0,rx1,ry1);
-    if(!fit||fit.n<10)return {error:'未在框内识别到清晰边缘，请框选完整、干净的单条斜刃带'};
-    if(fit.resid>2.5)return {error:'边缘不可靠：请紧贴同一条边界、避开线对/图案交错区重新框选'};
-    // ESF累积 -> LSF
-    var osr=4,half=12,nb=2*half*osr,esf=new Float64Array(nb),cnt=new Float64Array(nb);
-    for(var y=ry0;y<ry1;y++){
-      for(var x=rx0;x<rx1;x++){
-        var d=(x-(fit.a*y+fit.b))/Math.sqrt(1+fit.a*fit.a);
-        if(d>=-half&&d<half){var k=Math.floor((d+half)*osr);esf[k]+=yLin[y*W+x];cnt[k]+=1;}
+  /* ---------- 曲线取值 ---------- */
+
+  function sfrFindCross(freq, mtf, n, level) {
+    for (var i = 1; i < n; i++) {
+      if (mtf[i - 1] > level && mtf[i] <= level) {
+        var den = mtf[i - 1] - mtf[i];
+        var t = den > 1e-12 ? (mtf[i - 1] - level) / den : 0;
+        return freq[i - 1] + t * (freq[i] - freq[i - 1]);
       }
     }
-    for(var k=0;k<nb;k++){if(cnt[k]>0)esf[k]/=cnt[k];}
-    // 平台归一化
-    var dark=0,light=0,nd=0,nl=0;
-    for(var k=0;k<10;k++){dark+=esf[k];nd++;}
-    for(var k=nb-10;k<nb;k++){light+=esf[k];nl++;}
-    dark/=nd;light/=nl;var amp=light-dark;
-    if(amp<0.05)return {error:'边缘对比度不足，请框选黑白交界清晰处'};
-    // 平台 amp 仅用于对比度门槛；锐化量由频域 MTF 在 f=0.15 处读取（见 sfrMtf），不再使用 ESF 时域过冲
-    // LSF
-    var lsf=[];for(var k=1;k<nb;k++)lsf.push(esf[k]-esf[k-1]);
-    var m=sfrMtf(lsf,osr);
-    // LCA: R/G/B 各自刃在框中心行的x位置差
-    function chanEdgeX(ch,yMid){
-      var cd=new Float64Array(npx);
-      for(var i=0;i<it.data.length;i+=4){cd[(i/4)|0]=sfrLin(it.data[i+ch]);}
-      var f=sfrEdgeFit(cd,W,rx0,ry0,rx1,ry1);
-      return f?f.a*yMid+f.b:null;
+    return -1;
+  }
+
+  function sfrInterpAt(freq, mtf, n, f) {
+    if (n < 1) return -1;
+    if (f <= freq[0]) return mtf[0];
+    for (var i = 0; i < n; i++) {
+      if (freq[i] >= f) {
+        if (i === 0) return mtf[0];
+        var den = freq[i] - freq[i - 1];
+        var t = den > 1e-12 ? (f - freq[i - 1]) / den : 0;
+        return mtf[i - 1] + t * (mtf[i] - mtf[i - 1]);
+      }
     }
-    var yMid=(ry0+ry1)/2;
-    var eR=chanEdgeX(0,yMid),eG=chanEdgeX(1,yMid),eB=chanEdgeX(2,yMid),lcaPx=null;
-    var vals=[eR,eG,eB].filter(function(v){return v!==null;});
-    if(vals.length>=2)lcaPx=Math.max.apply(null,vals)-Math.min.apply(null,vals);
-    var lcaPct=lcaPx===null?null:lcaPx/H*100;
-    return {mtf50:m.mtf50,mtf50p:m.mtf50p,sharp:m.sharp,rough:fit.resid,lcaPx:lcaPx,lcaPct:lcaPct};
+    return -1;
+  }
+
+  /* ---------- 主测量 ---------- */
+  /* F: w*h 线性光平面（0..255 量纲），返回度量结果 */
+  function sfrMeasureRoi(F, w0, h0, alpha) {
+    var r = { valid: false, msg: '' };
+    // F 必须是严格 w0×h0 的紧凑数组：调用方负责裁剪，此处改尺寸会让索引错位
+    if (w0 < 8 || h0 < 8) { r.msg = '框选区域过小（至少 8×8 像素）'; return r; }
+
+    var i, k, x, y, w, h;
+    var dmin = 1e300, dmax = -1e300;
+    for (i = 0; i < w0 * h0; i++) { var vv = F[i]; if (vv < dmin) dmin = vv; if (vv > dmax) dmax = vv; }
+    r.contrast = (dmax - dmin) / 255;
+    if (dmax - dmin < 16) { r.msg = '边缘对比度不足（' + Math.round(dmax - dmin) + '/255），请框选黑白交界清晰处'; return r; }
+
+    var smooth = 0, fitrms = 0, slope = 0, coef = null, jmid = 0, jhalf = 1;
+    var hflip = false, vflip = false, yOff = 0;
+    var jj = null, cen = null;
+
+    for (var pass = 0; pass < 2; pass++) {
+      w = w0; h = h0; slope = 0; coef = null; hflip = false; vflip = false; yOff = 0;
+      var f = new Float64Array(F);
+
+      // 统一成暗 -> 亮
+      var nh = Math.floor(w / 4); if (nh < 1) nh = 1;
+      var lm = 0, rm = 0;
+      for (y = 0; y < h; y++) {
+        var b0 = y * w;
+        for (x = 0; x < nh; x++) lm += f[b0 + x];
+        for (x = w - nh; x < w; x++) rm += f[b0 + x];
+      }
+      if (rm < lm) { f = sfrFlipH(f, h, w); hflip = true; }
+
+      var okPass = true;
+      for (var attempt = 0; attempt < 2; attempt++) {
+        var ce = sfrCentroids(f, h, w, smooth);
+        var run = sfrLongestRun(ce.ok);
+        if (!run) { r.msg = '未在框内识别到清晰边缘，请框选完整、干净的单条斜刃带'; return r; }
+        if (run.len < 24) { r.msg = '边缘仅覆盖 ' + run.len + ' 行，至少需要 24 行'; return r; }
+        if (run.r0 > 0 || run.r1 < h - 1) {
+          var nf = new Float64Array(run.len * w);
+          for (y = 0; y < run.len; y++) {
+            var ss = (run.r0 + y) * w, dd = y * w;
+            for (x = 0; x < w; x++) nf[dd + x] = f[ss + x];
+          }
+          f = nf; h = run.len;
+          yOff += run.r0;
+          ce = sfrCentroids(f, h, w, smooth);
+        }
+        jmid = (h - 1) / 2;
+        jhalf = h > 1 ? jmid : 1;
+
+        var cnt = 0;
+        for (y = 0; y < h; y++) if (ce.ok[y]) cnt++;
+        if (cnt < 8) { r.msg = '可用扫描线不足（' + cnt + ' 行），请加大框选高度'; return r; }
+        jj = new Float64Array(cnt); cen = new Float64Array(cnt);
+        k = 0;
+        for (y = 0; y < h; y++) if (ce.ok[y]) { jj[k] = y; cen[k] = ce.c[y]; k++; }
+
+        var cf = sfrPolyFit(jj, cen, cnt, 5, jmid, jhalf);
+        if (cf) {
+          coef = cf; slope = cf[1] / jhalf;
+        } else {
+          var sx = 0, sy = 0, sxx = 0, sxy = 0;
+          for (i = 0; i < cnt; i++) { sx += jj[i]; sy += cen[i]; sxx += jj[i] * jj[i]; sxy += jj[i] * cen[i]; }
+          var den = cnt * sxx - sx * sx;
+          if (Math.abs(den) < 1e-9) { r.msg = '边缘几何退化，无法拟合'; return r; }
+          slope = (cnt * sxy - sx * sy) / den;
+          var ic = (sy - slope * sx) / cnt;
+          coef = new Float64Array(6);
+          coef[0] = ic + slope * jmid;
+          coef[1] = slope * jhalf;
+        }
+        if (slope >= 0) break;
+        f = sfrFlipV(f, h, w); vflip = !vflip;     // 负斜率 -> 垂直镜像重来
+      }
+
+      if (slope <= 0) { r.msg = '检测到水平刃：本工具只测竖直刃，请换一条近竖直的黑白边'; return r; }
+      if (slope > 1.0) {
+        r.msg = '刃倾斜过大（' + (Math.atan(slope) * 180 / Math.PI).toFixed(1) + '°），请用小于 45° 的斜刃';
+        return r;
+      }
+      var sweep = h * slope;
+      if (sweep * alpha < 1.0) {
+        r.msg = '刃在框内仅横移 ' + sweep.toFixed(2) + ' px，倾斜不足，无法填充 ' + alpha + ' 倍超采样栅格';
+        return r;
+      }
+
+      // 拟合残差 -> 决定是否用平滑质心重算
+      var ss2 = 0;
+      for (i = 0; i < cnt; i++) {
+        var dv = cen[i] - sfrPolyEval(coef, jj[i], jmid, jhalf);
+        ss2 += dv * dv;
+      }
+      fitrms = cnt > 1 ? Math.sqrt(ss2 / cnt) : 0;
+      if (fitrms <= 0.30 || pass === 1) break;
+      smooth = 1;
+      okPass = false;
+    }
+    r.slope = slope;
+    r.fitResidual = fitrms;
+
+    // 粗糙度：相对二阶基线的残差 RMS（Imatest Total roughness 口径）
+    var rough = 0;
+    if (jj && jj.length > 2) {
+      var c2 = sfrPolyFit(jj, cen, jj.length, 2, jmid, jhalf);
+      if (!c2) c2 = sfrPolyFit(jj, cen, jj.length, 1, jmid, jhalf);
+      if (c2) {
+        var s3 = 0;
+        for (i = 0; i < jj.length; i++) {
+          var d3 = cen[i] - sfrPolyEval(c2, jj[i], jmid, jhalf);
+          s3 += d3 * d3;
+        }
+        rough = Math.sqrt(s3 / jj.length);
+      } else rough = fitrms;
+    }
+    r.rough = rough;
+
+    /* ---- 超采样分箱 -> ESF ---- */
+    var cth = 1 / Math.sqrt(1 + slope * slope);
+    var line_c = sfrPolyEval(coef, (h - 1) / 2, jmid, jhalf);
+    var near = Math.min(line_c, w - line_c);
+    var half_w = w * 0.5;
+    if (near < half_w * 0.7) half_w = near > 4 ? near : 4;
+    var nbin = Math.round(2 * half_w * cth * alpha);
+    if (nbin < 32) nbin = 32;
+    if (nbin > SFR_MAX_NBIN) nbin = SFR_MAX_NBIN;
+
+    var half_nb = nbin / 2, span = dmax - dmin;
+    var sums = new Float64Array(nbin), cnts = new Float64Array(nbin);
+    for (y = 0; y < h; y++) {
+      var lc = sfrPolyEval(coef, y, jmid, jhalf), b1 = y * w;
+      for (x = 0; x < w; x++) {
+        var bin = Math.floor(alpha * ((x - lc) * cth) + half_nb + SFR_BIN_PHASE);
+        if (bin >= 0 && bin < nbin) { sums[bin] += (f[b1 + x] - dmin) / span; cnts[bin] += 1; }
+      }
+    }
+    var edgex = new Float64Array(nbin);
+    for (k = 0; k < nbin; k++) if (cnts[k] > 0) edgex[k] = sums[k] / cnts[k];
+
+    var known = [];
+    for (k = 0; k < nbin; k++) if (cnts[k] > 0) known.push(k);
+    if (!known.length) { r.msg = '没有样本落入 ESF 栅格'; return r; }
+    var first = known[0], last = known[known.length - 1];
+    for (k = 0; k < known.length - 1; k++) {
+      var a = known[k], b2 = known[k + 1];
+      if (b2 - a > 1) {
+        var v0 = edgex[a], v1 = edgex[b2];
+        for (var gk = a + 1; gk < b2; gk++) edgex[gk] = v0 + (v1 - v0) * (gk - a) / (b2 - a);
+      }
+    }
+    for (k = 0; k < first; k++) edgex[k] = edgex[first];
+    for (k = last + 1; k < nbin; k++) edgex[k] = edgex[last];
+
+    // 两端平台归一
+    var npad = Math.floor(nbin / 40);
+    if (npad < 2) npad = 2;
+    var plo = 0, phi = 0;
+    for (k = 0; k < npad; k++) { plo += edgex[k]; phi += edgex[nbin - npad + k]; }
+    plo /= npad; phi /= npad;
+    if (Math.abs(phi - plo) < 1e-9) { r.msg = 'ESF 无对比度，测量失败'; return r; }
+    var inv = 1 / (phi - plo);
+    for (k = 0; k < nbin; k++) edgex[k] = (edgex[k] - plo) * inv;
+
+    /* ---- 非均匀照度校正 ---- */
+    if (SFR_NONUNIFORM && nbin >= 16) {
+      var pl = new Float64Array(nbin);
+      pl[0] = edgex[1] - edgex[0];
+      for (k = 1; k < nbin - 1; k++) pl[k] = (edgex[k + 1] - edgex[k - 1]) / 2;
+      pl[nbin - 1] = edgex[nbin - 1] - edgex[nbin - 2];
+      var ipk = 0, pk = 0;
+      for (k = 0; k < nbin; k++) { var av = Math.abs(pl[k]); if (av > pk) { pk = av; ipk = k; } }
+      if (pk > 0) {
+        var thr = 0.2 * pk, iL = ipk, iU = ipk;
+        while (iL > 0 && Math.abs(pl[iL]) > thr) iL--;
+        while (iU < nbin - 1 && Math.abs(pl[iU]) > thr) iU++;
+        var start = ipk + Math.round(2 * (iU - iL));
+        if (start < nbin - 8) {
+          var n2 = nbin - start;
+          if (n2 >= 8) {
+            var sx2 = 0, sy2 = 0, sxx2 = 0, sxy2 = 0;
+            for (k = start; k < nbin; k++) {
+              var xv = k / alpha, yv = edgex[k];
+              sx2 += xv; sy2 += yv; sxx2 += xv * xv; sxy2 += xv * yv;
+            }
+            var den2 = n2 * sxx2 - sx2 * sx2;
+            if (Math.abs(den2) > 1e-9) {
+              var k2c = (n2 * sxy2 - sx2 * sy2) / den2;
+              var k1c = (sy2 - k2c * sx2) / n2;
+              var L0 = k1c, L1 = k1c + k2c * ((nbin - 1) / alpha);
+              var lmin = Math.min(L0, L1), lmax = Math.max(L0, L1);
+              // 守卫：照度梯度应始终接近 1；外推到 0 附近说明拟合跟上了刃口斜坡
+              if (lmin > 0 && lmin >= 0.5 * lmax && Math.abs(k2c) > 1e-12) {
+                for (k = 0; k < nbin; k++) {
+                  var L = k1c + k2c * (k / alpha);
+                  edgex[k] /= (L > 0.01 ? L : 0.01);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    var esfN = new Float64Array(edgex);       // 归一化 ESF（用于过冲）
+    r.esf = esfN;
+    var tail = sfrEsfToMtf(esfN, alpha);
+    if (!tail.valid) { r.msg = tail.msg; return r; }
+    for (var tk in tail) if (tk !== 'valid' && tk !== 'msg') r[tk] = tail[tk];
+    r.valid = true;
+    r.alpha = alpha;
+    r.edgeX = (hflip ? (w - 1 - line_c) : line_c);   // 原始（未镜像）ROI 坐标
+    r.lineC = line_c;
+    // 刃的有效纵向范围与两端位置（供方向/几何判断与画刃线使用）
+    r.cropY0 = yOff; r.cropH = h;
+    var xa = sfrPolyEval(coef, 0, jmid, jhalf), xb = sfrPolyEval(coef, h - 1, jmid, jhalf);
+    r.edgeX0 = hflip ? (w - 1 - xa) : xa;
+    r.edgeX1 = hflip ? (w - 1 - xb) : xb;
+    return r;
+  }
+
+  /* ESF -> LSF -> 窗 -> DFT -> MTF：单独成函数，便于「多刃 ESF 平均」后复用同一条尾部 */
+  function sfrEsfToMtf(esfN, alpha) {
+    var o = { valid: false, msg: '' };
+    var edgex = esfN;              // 尾部原来直接在 edgex 上做差分/加窗
+    var nbin = esfN.length, k;
+    var npad = Math.floor(nbin / 40);
+    if (npad < 2) npad = 2;
+    if (nbin < 64) { o.msg = 'ESF 太短'; return o; }
+      /* ---- LSF ---- */
+      var lsf = new Float64Array(nbin);
+      for (k = 1; k < nbin - 1; k++) lsf[k] = (edgex[k + 1] - edgex[k - 1]) / 2;
+      lsf[0] = edgex[1] - edgex[0];
+      lsf[nbin - 1] = edgex[nbin - 1] - edgex[nbin - 2];
+
+      /* ---- modified apodization ---- */
+      if (SFR_MOD_APOD && nbin >= 16) {
+        var wma = Math.round(2.25 * alpha);
+        if (wma < 3) wma = 3;
+        if (wma % 2 === 0) wma += 1;
+        if (wma > nbin) wma = (nbin % 2) ? nbin : nbin - 1;
+        var hwp = Math.floor(wma / 2), sm = new Float64Array(nbin);
+        for (k = 0; k < nbin; k++) {
+          var acc = 0;
+          for (var t = -hwp; t <= hwp; t++) {
+            var sk = k + t;
+            if (sk >= 0 && sk < nbin) acc += lsf[sk];
+          }
+          sm[k] = acc / wma;
+        }
+        var ipeak = 0, pk2 = 0;
+        for (k = 0; k < nbin; k++) { var av2 = Math.abs(sm[k]); if (av2 > pk2) { pk2 = av2; ipeak = k; } }
+        if (pk2 > 0) {
+          var thr2 = 0.2 * pk2, iL2 = 0, iU2 = nbin - 1;
+          for (k = ipeak; k > 0; k--) if (Math.abs(sm[k]) <= thr2) { iL2 = k; break; }
+          for (k = ipeak; k < nbin - 1; k++) if (Math.abs(sm[k]) <= thr2) { iU2 = k; break; }
+          var pad = Math.round((iU2 - iL2) + 4 * alpha);
+          var kA = Math.max(iL2 - pad, 0), kB = Math.min(iU2 + pad, nbin - 1);
+          for (k = 0; k < nbin; k++) if (k < kA || k > kB) lsf[k] = sm[k];
+        }
+      }
+
+      /* ---- 峰值对齐 + Hann 窗 ---- */
+      var halfw = nbin / 2, slo = 0, shi = nbin - 1;
+      var p0 = 0, p1 = 0;
+      for (k = 0; k < npad; k++) { p0 += esfN[k]; p1 += esfN[nbin - npad + k]; }
+      p0 /= npad; p1 /= npad;
+      var i10 = -1, i50 = -1, i90 = -1;
+      if (p1 > p0) {
+        for (k = 0; k < nbin; k++) {
+          if (i10 < 0 && esfN[k] >= 0.1) i10 = k;
+          if (i50 < 0 && esfN[k] >= 0.5) i50 = k;
+          if (i90 < 0 && esfN[k] >= 0.9) { i90 = k; break; }
+        }
+      } else {
+        for (k = 0; k < nbin; k++) {
+          if (i10 < 0 && esfN[k] <= 0.9) i10 = k;
+          if (i50 < 0 && esfN[k] <= 0.5) i50 = k;
+          if (i90 < 0 && esfN[k] <= 0.1) { i90 = k; break; }
+        }
+      }
+      if (i50 >= 0 && i10 >= 0 && i90 >= 0) {
+        var rise = Math.max(i90 - i10, 1);
+        var hs = rise + 2 * Math.round(alpha);
+        slo = Math.max(i50 - hs, 0);
+        shi = Math.min(i50 + hs, nbin - 1);
+      }
+      var peak = 0;
+      for (k = slo; k <= shi; k++) { var ap = Math.abs(lsf[k]); if (ap > peak) peak = ap; }
+      if (peak <= 0) { o.msg = 'LSF 平坦，测量失败'; return o; }
+      var mid = slo;
+      for (k = slo; k <= shi; k++) {
+        if (Math.abs(Math.abs(lsf[k]) - peak) < 1e-12) { mid = k; break; }
+      }
+      var offset = mid - Math.floor(nbin / 2);
+      var buf = new Float64Array(nbin);
+      for (k = 0; k < nbin; k++) {
+        var src = k + offset;
+        if (src >= 0 && src < nbin) buf[k] = lsf[src];
+      }
+      var begin = Math.floor(nbin / 2) - Math.trunc(halfw);
+      var end = Math.floor(nbin / 2) + Math.trunc(halfw);
+      begin = Math.max(begin, 0); end = Math.min(end, nbin);
+      var win = new Float64Array(nbin);
+      for (k = begin; k < end; k++) {
+        win[k] = buf[k] * 0.5 * (1 + Math.cos(Math.PI * (k - nbin / 2) / halfw));
+      }
+
+      /* ---- DFT -> MTF ---- */
+      var ns = Math.floor(nbin / 2);
+      if (ns < 2) { o.msg = '频率轴过短'; return o; }
+      var dc = 0;
+      for (k = 0; k < nbin; k++) dc += win[k];
+      dc = Math.abs(dc);
+      if (dc < 1e-9) { o.msg = 'LSF 直流为零，测量失败'; return o; }
+
+      var mag = sfrDftMag(win, nbin, ns);
+      var freq = new Float64Array(ns), mtf = new Float64Array(ns);
+      for (k = 0; k < ns; k++) { freq[k] = k * alpha / nbin; mtf[k] = mag[k] / dc; }
+
+      // 轻平滑（~0.02 c/px），压掉噪声引起的曲线抖动
+      if (ns > 8) {
+        var df = freq[1] - freq[0];
+        var kk = df > 1e-9 ? Math.round(0.02 / df) : 7;
+        if (kk < 3) kk = 3;
+        if (kk > Math.floor(ns / 4)) kk = Math.floor(ns / 4);
+        if (kk % 2 === 0) kk += 1;
+        var hf = Math.floor(kk / 2);
+        if (hf >= 1) {
+          var acc2 = new Float64Array(ns);
+          for (k = 0; k < ns; k++) {
+            var s4 = 0;
+            for (var t2 = -hf; t2 <= hf; t2++) {
+              var q2 = k + t2;
+              if (q2 < 0) q2 = 0; if (q2 >= ns) q2 = ns - 1;
+              s4 += mtf[q2];
+            }
+            acc2[k] = s4 / kk;
+          }
+          mtf = acc2;
+        }
+      }
+
+      var pk3 = 0;
+      for (k = 0; k < ns; k++) if (freq[k] <= 0.5 && mtf[k] > pk3) pk3 = mtf[k];
+      if (pk3 <= 0) pk3 = 1;
+
+      // 过冲 / 欠冲（ESF 时域，占台阶高度百分比）
+      // 过冲/欠冲只在刃口两侧各 4 px 的带内取极值：扫整段 ESF 时，平台上的单个噪声尖峰
+      // 会把过冲抬到几十个百分点（Imatest 也是在刃口附近量的）
+      var eMax = -1e300, eMin = 1e300, bLo = 2, bHi = nbin - 3;
+      if (i10 >= 0 && i90 >= 0) {
+        var bw = Math.max(2, Math.round(4 * alpha));
+        bLo = Math.max(2, i10 - bw);
+        bHi = Math.min(nbin - 3, i90 + bw);
+      }
+      for (k = bLo; k <= bHi; k++) { if (esfN[k] > eMax) eMax = esfN[k]; if (esfN[k] < eMin) eMin = esfN[k]; }
+
+      o.valid = true;
+      o.alpha = alpha;
+      o.nbin = nbin;
+      o.peak = pk3;
+      o.mtf50 = sfrFindCross(freq, mtf, ns, 0.5);
+      o.mtf50p = sfrFindCross(freq, mtf, ns, 0.5 * pk3);
+      o.mtf30 = sfrFindCross(freq, mtf, ns, 0.3);
+      o.mtf20 = sfrFindCross(freq, mtf, ns, 0.2);
+      o.mtf10 = sfrFindCross(freq, mtf, ns, 0.1);
+      o.mtf15 = sfrInterpAt(freq, mtf, ns, 0.15);
+      o.overshoot = Math.max(0, eMax - 1) * 100;
+      o.undershoot = Math.max(0, -eMin) * 100;
+      o.freq = freq; o.mtf = mtf; o.lsf = win;
+    return o;
+  }
+
+  /* 只求某通道刃线在 ROI 中部 x 位置（LCA 用，跳过分箱与频谱） */
+  function sfrEdgeXChan(F, w, h) {
+    if (w < 8 || h < 8) return null;
+    var f = new Float64Array(F), nh = Math.floor(w / 4);
+    if (nh < 1) nh = 1;
+    var lm = 0, rm = 0, x, y;
+    for (y = 0; y < h; y++) {
+      var b = y * w;
+      for (x = 0; x < nh; x++) lm += f[b + x];
+      for (x = w - nh; x < w; x++) rm += f[b + x];
+    }
+    var flip = rm < lm;
+    if (flip) f = sfrFlipH(f, h, w);
+    var ce = sfrCentroids(f, h, w, 0);
+    var cnt = 0;
+    for (y = 0; y < h; y++) if (ce.ok[y]) cnt++;
+    if (cnt < 8) return null;
+    var jj = new Float64Array(cnt), cn = new Float64Array(cnt), k = 0;
+    for (y = 0; y < h; y++) if (ce.ok[y]) { jj[k] = y; cn[k] = ce.c[y]; k++; }
+    var jmid = (h - 1) / 2, jhalf = h > 1 ? jmid : 1;
+    var cf = sfrPolyFit(jj, cn, cnt, 5, jmid, jhalf);
+    if (!cf) cf = sfrPolyFit(jj, cn, cnt, 1, jmid, jhalf);
+    if (!cf) return null;
+    var xm = sfrPolyEval(cf, h / 2, jmid, jhalf);
+    return flip ? (w - 1 - xm) : xm;
+  }
+  // sRGB 编码值(0..255 int) -> 线性光；查表替代逐像素 Math.pow
+  var sfrLinTab = (function () {
+    var t = new Float64Array(256);
+    for (var i = 0; i < 256; i++) {
+      var c = i / 255;
+      t[i] = c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    }
+    return t;
+  })();
+  function sfrLin(v) { return sfrLinTab[v]; }
+
+  // 多条刃的归一化 ESF 平均：各刃栅格同相位、以 50% 点对齐，取公共区间
+  function sfrAvgEsf(list) {
+    var nb = list[0].nbin, i, k;
+    for (i = 1; i < list.length; i++) if (list[i].nbin < nb) nb = list[i].nbin;
+    var acc = new Float64Array(nb);
+    for (i = 0; i < list.length; i++) {
+      var e = list[i].esf, off = (list[i].nbin - nb) / 2;
+      for (k = 0; k < nb; k++) {
+        var pos = k + off, i0 = Math.floor(pos), tt = pos - i0;
+        var a = (i0 >= 0 && i0 < e.length) ? e[i0] : 0;
+        var b = (i0 + 1 >= 0 && i0 + 1 < e.length) ? e[i0 + 1] : a;
+        acc[k] += a + (b - a) * tt;
+      }
+    }
+    for (k = 0; k < nb; k++) acc[k] /= list.length;
+    return acc;
+  }
+
+  function sfrAvgOn() {
+    var el = document.getElementById('sfrAvg');
+    return !!(el && el.checked);
+  }
+
+  /* ---------- 页面适配层：ROI -> 线性亮度平面 -> 核心测量 -> UI 指标 ---------- */
+
+  // 取 ROI 的单通道（ch>=0）或亮度（ch<0）平面，量纲 0..255 线性光
+  function sfrRectPlane(it, x0, y0, w, h, ch) {
+    var W = it.W, d = it.data, Y = new Float64Array(w * h), x, y, src, dst;
+    if (ch < 0) {
+      for (y = 0; y < h; y++) {
+        src = ((y0 + y) * W + x0) * 4; dst = y * w;
+        for (x = 0; x < w; x++, src += 4, dst++)
+          Y[dst] = (0.2126 * sfrLin(d[src]) + 0.7152 * sfrLin(d[src + 1]) + 0.0722 * sfrLin(d[src + 2])) * 255;
+      }
+    } else {
+      for (y = 0; y < h; y++) {
+        src = ((y0 + y) * W + x0) * 4 + ch; dst = y * w;
+        for (x = 0; x < w; x++, src += 4, dst++) Y[dst] = sfrLin(d[src]) * 255;
+      }
+    }
+    return Y;
+  }
+
+  // 取 ROI 平面；dir=1 时转置成「竖直刃」，从而复用同一条测量链路（等价 measure_h）
+  function sfrRoiPlane(it, p, ch, dir) {
+    var q = sfrRectPlane(it, p.x0, p.y0, p.w, p.h, ch);
+    if (!dir) return { P: q, w: p.w, h: p.h };
+    var t = new Float64Array(p.w * p.h), x, y;
+    for (y = 0; y < p.h; y++) for (x = 0; x < p.w; x++) t[x * p.h + y] = q[y * p.w + x];
+    return { P: t, w: p.h, h: p.w };
+  }
+
+  // 用户选的方向：-1 自动（先竖直再水平，取能测出来的）
+  function sfrDirMode() {
+    var el = document.getElementById('sfrDir');
+    return el ? parseInt(el.value, 10) : 0;
+  }
+
+  function sfrRectPx(it, roi) {
+    var W = it.W, H = it.H;
+    var x0 = Math.max(0, Math.round(roi.x * W)), x1 = Math.min(W, Math.round((roi.x + roi.w) * W));
+    var y0 = Math.max(0, Math.round(roi.y * H)), y1 = Math.min(H, Math.round((roi.y + roi.h) * H));
+    if (x1 - x0 > 4096) x1 = x0 + 4096;
+    if (y1 - y0 > 4096) y1 = y0 + 4096;
+    return { x0: x0, y0: y0, w: x1 - x0, h: y1 - y0 };
+  }
+
+  function sfrEval(it) {
+    if (!it.roi) return null;
+    var useAlt = sfrAvgOn();
+    var rects = useAlt ? [it.roi].concat(it.roiAlt || []) : [it.roi];
+    var dm = sfrDirMode();
+    // 同一 ROI / 同一方向只算一次：刷新、改阈值、导出 CSV 都会重复调用
+    var key = (useAlt ? 'A|' : 'S|') + dm + '|' + rects.map(function (r) { return r.x + ',' + r.y + ',' + r.w + ',' + r.h; }).join('|');
+    if (it._sfrKey === key) return it._sfrVal;
+
+    var res, p0 = sfrRectPx(it, rects[0]);
+    if (p0.w < 8 || p0.h < 8) {
+      res = { error: '框选区域过小（至少 8×8 像素），请框住完整的黑白交界带' };
+    } else {
+      // 自动方向：先按竖直刃测，测不出再转置按水平刃测（结果取自能测通的那一次）
+      var dirs = dm < 0 ? [0, 1] : [dm], di, mo = null, dirUsed = 0;
+      for (di = 0; di < dirs.length; di++) {
+        var q0 = sfrRoiPlane(it, p0, -1, dirs[di]);
+        mo = sfrMeasureRoi(q0.P, q0.w, q0.h, SFR_ALPHA);
+        if (mo.valid) { dirUsed = dirs[di]; break; }
+      }
+      var m = mo;
+      if (!m.valid) {
+        res = { error: m.msg };
+      } else {
+        // 多刃平均（可选）：各刃在自身平台上归一、栅格同相位，按 50% 点对齐后平均 ESF，
+        // 再由平均 ESF 重算 MTF —— 只降噪，不改刃位置与粗糙度
+        var used = 1;
+        if (rects.length > 1) {
+          var list = [{ esf: m.esf, nbin: m.nbin }], q, pq, mq;
+          for (q = 1; q < rects.length; q++) {
+            pq = sfrRectPx(it, rects[q]);
+            if (pq.w < 8 || pq.h < 8) continue;
+            var qq = sfrRoiPlane(it, pq, -1, dirUsed);
+            mq = sfrMeasureRoi(qq.P, qq.w, qq.h, SFR_ALPHA);
+            if (mq.valid && mq.esf) list.push({ esf: mq.esf, nbin: mq.nbin });
+          }
+          if (list.length > 1) {
+            var tt = sfrEsfToMtf(sfrAvgEsf(list), SFR_ALPHA);
+            if (tt.valid) {
+              m.mtf50 = tt.mtf50; m.mtf50p = tt.mtf50p; m.mtf15 = tt.mtf15; m.peak = tt.peak;
+              m.overshoot = tt.overshoot; m.undershoot = tt.undershoot; m.nbin = tt.nbin;
+            }
+            used = list.length;
+          }
+        }
+        // LCA：R/G/B 各自拟合刃线，取框中部位置差（只看位置，不做频谱）
+        var xs = [], c, cx;
+        for (c = 0; c < 3; c++) {
+          var qc = sfrRoiPlane(it, p0, c, dirUsed);
+          cx = sfrEdgeXChan(qc.P, qc.w, qc.h);
+          if (cx !== null) xs.push(cx);
+        }
+        var lcaPx = null;
+        if (xs.length >= 2) lcaPx = Math.max.apply(null, xs) - Math.min.apply(null, xs);
+        res = {
+          mtf50: m.mtf50 > 0 ? m.mtf50 : null,
+          mtf50p: m.mtf50p > 0 ? m.mtf50p : null,
+          sharp: m.mtf15 > 0 ? 100 * (m.mtf15 - 1) : null,   // Imatest 口径：100×(MTF(0.15)−1)
+          rough: m.rough,
+          lcaPx: lcaPx,
+          lcaPct: lcaPx === null ? null : lcaPx / it.H * 100,
+          overshoot: m.overshoot,
+          undershoot: m.undershoot,
+          slope: m.slope,
+          angleDeg: Math.atan(m.slope) * 180 / Math.PI,
+          contrast: m.contrast,
+          peak: m.peak,
+          nbin: m.nbin,
+          dir: dirUsed,
+          edges: used
+        };
+      }
+    }
+    it._sfrKey = key; it._sfrVal = res;
+    return res;
   }
 
   function sfrJudge(r){
@@ -4870,12 +5758,14 @@ window.__TOOLS['bench'] = function(){
     var lcaPxMax=parseFloat(document.getElementById('sfrThLcaPx').value)||1;
     var lcaPctMax=parseFloat(document.getElementById('sfrThLcaPct').value)||0.1;
     var rghMax=parseFloat(document.getElementById('sfrThRgh').value)||0.1;
+    var overMax=parseFloat(document.getElementById('sfrThOver').value)||25;
     return {
       mtf50:r.mtf50!==null&&r.mtf50>=t50,
       mtf50p:r.mtf50p!==null&&r.mtf50p>=t50p,
       sharp:r.sharp!==null&&r.sharp>=osLo&&r.sharp<=osHi,
       lca:(r.lcaPx===null||(r.lcaPx<=lcaPxMax&&r.lcaPct<=lcaPctMax)),
-      rough:r.rough<=rghMax
+      rough:r.rough<=rghMax,
+      over:r.overshoot!=null&&r.overshoot<=overMax
     };
   }
 
@@ -4902,7 +5792,7 @@ window.__TOOLS['bench'] = function(){
     return lens;
   }
   function sfrPos(e){var r=sfrCanvas.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height};}
-  function sfrDown(e){if(sfrCur<0||!sfrItems[sfrCur])return;var p=sfrPos(e);sfrDrag={sx:p.x,sy:p.y,ex:p.x,ey:p.y};}
+  function sfrDown(e){if(sfrCur<0||!sfrItems[sfrCur])return;var p=sfrPos(e);sfrDrag={sx:p.x,sy:p.y,ex:p.x,ey:p.y,add:!!(e.shiftKey&&sfrAvgOn())};}
   function sfrMove(e){
     sfrLensUpdate(e);
     if(!sfrDrag)return;
@@ -4912,7 +5802,15 @@ window.__TOOLS['bench'] = function(){
     if(!sfrDrag)return;
     var w=Math.abs(sfrDrag.ex-sfrDrag.sx),h=Math.abs(sfrDrag.ey-sfrDrag.sy);
     if(w>0.005&&h>0.005&&sfrCur>=0&&sfrItems[sfrCur]){
-      sfrItems[sfrCur].roi={x:Math.min(sfrDrag.sx,sfrDrag.ex),y:Math.min(sfrDrag.sy,sfrDrag.ey),w:w,h:h};
+      var it=sfrItems[sfrCur];
+      var box={x:Math.min(sfrDrag.sx,sfrDrag.ex),y:Math.min(sfrDrag.sy,sfrDrag.ey),w:w,h:h};
+      if(sfrDrag.add&&it.roi){
+        // Shift+拖：追加一条备用刃，供「多刃平均」使用（主框 + 2 条备用 = 最多 3 条）
+        it.roiAlt=(it.roiAlt||[]).slice(0,1).concat([box]);
+      }else{
+        it.roi=box;it.roiAlt=null;
+      }
+      it.autoMsg='';
     }
     sfrDrag=null;sfrDraw();sfrRefresh();
   }
@@ -4951,6 +5849,14 @@ window.__TOOLS['bench'] = function(){
       sfrCtx.fillRect(it.roi.x*sfrCanvas.width,it.roi.y*sfrCanvas.height,it.roi.w*sfrCanvas.width,it.roi.h*sfrCanvas.height);
       sfrCtx.strokeStyle='#2563a8';sfrCtx.lineWidth=2;
       sfrCtx.strokeRect(it.roi.x*sfrCanvas.width,it.roi.y*sfrCanvas.height,it.roi.w*sfrCanvas.width,it.roi.h*sfrCanvas.height);
+      // 多刃平均参与的其他刃：细虚线框
+      if(sfrAvgOn()&&it.roiAlt&&it.roiAlt.length){
+        sfrCtx.setLineDash([4,4]);sfrCtx.lineWidth=1.5;sfrCtx.strokeStyle='#1a7f4b';
+        it.roiAlt.forEach(function(r){
+          sfrCtx.strokeRect(r.x*sfrCanvas.width,r.y*sfrCanvas.height,r.w*sfrCanvas.width,r.h*sfrCanvas.height);
+        });
+        sfrCtx.setLineDash([]);
+      }
     }
     if(sfrDrag){
       sfrCtx.strokeStyle='#c0392b';sfrCtx.setLineDash([5,4]);sfrCtx.lineWidth=2;
@@ -4964,9 +5870,11 @@ window.__TOOLS['bench'] = function(){
     list.innerHTML=sfrItems.map(function(it,i){
       var r=sfrEval(it),j=sfrJudge(r||{});
       var badge='<span class="badge b-na">未框选</span>';
-      if(r&&!r.error){var all=j.mtf50&&j.mtf50p&&j.sharp&&j.lca&&j.rough;badge='<span class="badge '+(all?'b-ok':'b-bad')+'">'+(all?'PASS':'FAIL')+'</span>';}
+      if(r&&!r.error){var all=j.mtf50&&j.mtf50p&&j.sharp&&j.lca&&j.rough&&j.over;badge='<span class="badge '+(all?'b-ok':'b-bad')+'">'+(all?'PASS':'FAIL')+'</span>';}
       else if(r&&r.error){badge='<span class="badge b-na">识别失败</span>';}
-      return '<div class="wb-chip'+(i===sfrCur?' active':'')+'" data-i="'+i+'"><span class="nm">'+esc(it.name)+'</span>'+badge+'<span class="del" data-del="'+i+'">×</span></div>';
+      else if(it.autoMsg){badge='<span class="badge b-na">找刃失败</span>';}
+      var nm=esc(it.name)+(r&&!r.error&&r.edges>1?'<i style="font-style:normal;color:var(--ok);font-size:11px"> ×'+r.edges+'</i>':'');
+      return '<div class="wb-chip'+(i===sfrCur?' active':'')+'" data-i="'+i+'"><span class="nm">'+nm+'</span>'+badge+'<span class="del" data-del="'+i+'">×</span></div>';
     }).join('');
     list.querySelectorAll('.wb-chip').forEach(function(el){
       el.addEventListener('click',function(ev){
@@ -4992,21 +5900,24 @@ window.__TOOLS['bench'] = function(){
     var rows=sfrItems.map(function(it){
       var r=sfrEval(it),j=sfrJudge(r||{});
       if(!r||r.error){
-        var note=r&&r.error?r.error:'未框选';
-        return '<tr><td class="fn">'+esc(it.name)+'</td><td colspan="6" class="num" style="color:var(--sub)">'+esc(note)+'</td></tr>';
+        var note=r&&r.error?r.error:(it.autoMsg||'未框选');
+        return '<tr><td class="fn">'+esc(it.name)+'</td><td colspan="7" class="num" style="color:var(--sub)">'+esc(note)+'</td></tr>';
       }
-      var all=j.mtf50&&j.mtf50p&&j.sharp&&j.lca&&j.rough;
+      var all=j.mtf50&&j.mtf50p&&j.sharp&&j.lca&&j.rough&&j.over;
       var mtf50txt=r.mtf50===null?'—':r.mtf50.toFixed(3);
       var mtf50ptxt=r.mtf50p===null?'—':r.mtf50p.toFixed(3);
       var lca=r.lcaPx===null?'—':r.lcaPx.toFixed(3)+' / '+r.lcaPct.toFixed(3)+'%';
-      return '<tr><td class="fn">'+esc(it.name)+'</td>'+
+      var nmTxt=esc(it.name)+(r.dir===1?' <span style="color:#b9770e">（水平刃）</span>':'')+(r.edges>1?' <span style="color:var(--ok)">（'+r.edges+' 刃平均）</span>':'');
+      return '<tr><td class="fn">'+nmTxt+'</td>'+
         cell(r.mtf50,j.mtf50,mtf50txt)+cell(r.mtf50p,j.mtf50p,mtf50ptxt)+
-        cell(r.sharp,j.sharp,r.sharp.toFixed(1)+'%')+cell(r.rough,j.rough,r.rough.toFixed(3))+
+        cell(r.sharp,j.sharp,r.sharp===null?'—':r.sharp.toFixed(1)+'%')+
+        cell(r.overshoot,j.over,r.overshoot.toFixed(1)+'%')+
+        cell(r.rough,j.rough,r.rough.toFixed(3))+
         cell(r.lcaPx,j.lca,lca)+
         '<td><span class="badge '+(all?'b-ok':'b-bad')+'">'+(all?'PASS':'FAIL')+'</span></td></tr>';
     }).join('');
-    box.innerHTML='<table class="sfr-table"><colgroup><col style="width:22%"><col style="width:13%"><col style="width:13%"><col style="width:14%"><col style="width:13%"><col style="width:15%"><col style="width:10%"></colgroup>'+
-      '<thead><tr><th>文件</th><th>MTF50<br>≥0.5</th><th>MTF50P<br>≥0.4</th><th>Oversharpening<br>10–25%</th><th>粗糙度<br>px</th><th>LCA<br>px / %H</th><th>判定</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    box.innerHTML='<table class="sfr-table"><colgroup><col style="width:20%"><col style="width:11%"><col style="width:11%"><col style="width:14%"><col style="width:11%"><col style="width:10%"><col style="width:13%"><col style="width:10%"></colgroup>'+
+      '<thead><tr><th>文件</th><th>MTF50<br>≥0.5</th><th>MTF50P<br>≥0.4</th><th>Oversharpening<br>10–25%</th><th>过冲<br>≤25%</th><th>粗糙度<br>px</th><th>LCA<br>px / %H</th><th>判定</th></tr></thead><tbody>'+rows+'</tbody></table>';
   }
 
   function sfrAddFiles(list){
@@ -5028,14 +5939,14 @@ window.__TOOLS['bench'] = function(){
 
   function sfrExportCSV(){
     if(!sfrItems.length)return;
-    var lines=['文件,MTF50,MTF50P,Oversharpening%,粗糙度px,LCA(px),LCA(%H),判定'];
+    var lines=['文件,MTF50,MTF50P,Oversharpening%,过冲%,欠冲%,粗糙度px,LCA(px),LCA(%H),判定'];
     sfrItems.forEach(function(it){
       var r=sfrEval(it),j=sfrJudge(r||{});
-      if(!r||r.error){lines.push(csvq(it.name)+',,,,,,,'+(r&&r.error?r.error:'未框选'));return;}
-      var all=j.mtf50&&j.mtf50p&&j.sharp&&j.lca&&j.rough;
+      if(!r||r.error){lines.push(csvq(it.name)+',,,,,,,,,'+(r&&r.error?r.error:'未框选'));return;}
+      var all=j.mtf50&&j.mtf50p&&j.sharp&&j.lca&&j.rough&&j.over;
       lines.push([csvq(it.name),
         r.mtf50===null?'':r.mtf50.toFixed(3),r.mtf50p===null?'':r.mtf50p.toFixed(3),
-        r.sharp.toFixed(1),r.rough.toFixed(3),
+        r.sharp===null?'':r.sharp.toFixed(1),r.overshoot.toFixed(1),r.undershoot.toFixed(1),r.rough.toFixed(3),
         r.lcaPx===null?'':r.lcaPx.toFixed(3),r.lcaPct===null?'':r.lcaPct.toFixed(3),
         all?'PASS':'FAIL'].join(','));
     });
@@ -5056,6 +5967,20 @@ window.__TOOLS['bench'] = function(){
       sfrItems=[];sfrCur=-1;sfrCanvas=null;document.getElementById('sfrStage').innerHTML='先添加图片，点选一张后在此框选斜刃带';sfrRefresh();
     });
     document.getElementById('sfrCsv').addEventListener('click',sfrExportCSV);
+    document.getElementById('sfrDir').addEventListener('change',function(){
+      sfrItems.forEach(function(x){x._sfrKey=null;});sfrDraw();sfrRefresh();
+    });
+    document.getElementById('sfrAvg').addEventListener('change',function(){
+      var hint=document.getElementById('sfrDirHint');
+      hint.textContent=this.checked?'按住 Shift 拖框可再加 1–2 条刃':'';
+      sfrItems.forEach(function(x){x._sfrKey=null;});   // 口径变了，清缓存重算
+      sfrDraw();sfrRefresh();
+    });
+    // 阈值改动即时重算，避免改完看不到结果变化
+    document.querySelectorAll('#sfrPanel .sfr-thresh input').forEach(function(el){
+      el.addEventListener('input',function(){sfrRefresh();});
+      el.addEventListener('change',function(){sfrRefresh();});
+    });
   })();
 
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
