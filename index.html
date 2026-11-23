@@ -2068,7 +2068,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   </svg>
   <div>
     <h1>FOV 视场角计算器</h1>
-    <p class="sub">实测 DFOV 优先，无实测时用裁剪后 DFOV 反推，输出各向视场角并导出表格</p>
+    <p class="sub">几何理论 / 16:9 理论 / 单镜头标称 / 整机实测 四路对照，输出各向视场角并导出表格</p>
   </div>
 </header>
 
@@ -2088,7 +2088,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
             <input id="efl" type="number" step="0.01" value="4.5">
           </div>
           <div class="field">
-            <label for="ndfov">镜头标称 DFOV (°)</label>
+            <label for="ndfov">单镜头标称 DFOV (°)</label>
             <input id="ndfov" type="number" step="0.1" value="80">
           </div>
         </div>
@@ -2118,7 +2118,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       </div>
 
       <div class="grp">
-        <div class="grp-hd"><i class="dot"></i>裁剪与实测基准</div>
+        <div class="grp-hd"><i class="dot"></i>裁剪与整机实测</div>
         <div class="row2">
           <div class="field">
             <label for="cropW">裁剪后 宽 (px)</label>
@@ -2131,14 +2131,10 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
         </div>
         <div class="readout" id="cropInfo">--</div>
         <div class="field" style="margin-top:10px">
-          <label for="mdfov">整机实测 DFOV (°)<span class="opt">首选</span></label>
-          <input id="mdfov" type="number" step="0.1" class="key" placeholder="全画幅实测，留空则跳过">
+          <label>整机实测 DFOV (°)<span class="opt">自动</span></label>
+          <input id="mdfovView" type="text" readonly placeholder="按下方图卡读数自动计算" style="background:#f7fafd;color:#5a6673">
         </div>
-        <div class="field">
-          <label for="cdfov">裁剪后 DFOV (°)<span class="opt b">备选</span></label>
-          <input id="cdfov" type="number" step="0.1" class="key" value="45" placeholder="无全画幅实测时使用">
-        </div>
-        <p class="hint">优先级：整机实测 &gt; 裁剪后 DFOV &gt; 镜头标称（仅在不超过 sensor 理论值时） &gt; 几何理论。裁剪留空或填满即视为不裁剪。</p>
+        <p class="hint">整机实测 DFOV 由「图卡实测读数」反算，无需手填。优先级：整机实测（读数） &gt; 单镜头标称（仅在不超过 sensor 理论值时） &gt; 几何理论。裁剪留空或填满即视为不裁剪。</p>
       </div>
 
       <div class="grp">
@@ -2172,11 +2168,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
           <div><span class="tk">VFOV</span><span class="tv"><span id="tV">--</span><em>°</em></span></div>
           <div><span class="tk">DFOV</span><span class="tv"><span id="tD">--</span><em>°</em></span></div>
         </div>
-        <div class="btns" style="margin-top:9px">
-          <button id="btnFillFull" style="font-size:12px">填入整机实测</button>
-          <button id="btnFillCrop" style="font-size:12px">填入裁剪后</button>
-        </div>
-        <p class="hint">读数为画面左右 / 上下边缘在图卡上的位置，物距从镜头入瞳量到图卡平面。</p>
+        <p class="hint">读数为画面左右 / 上下边缘在图卡上的位置，物距从镜头入瞳量到图卡平面；DFOV 直接作为「整机实测」参与对照。</p>
       </div>
 
       <div class="btns">
@@ -2458,6 +2450,7 @@ function parseCombinedCSV(text) {
           const caText = String(r[1] == null ? '' : r[1]).trim();
           const cAcc = parseColorAccuracy(caText);
           summary.push({
+            file: first,
             colorAccuracyText: caText,
             colorMaxC00: cAcc.max,
             colorMeanC00: cAcc.mean,
@@ -2474,6 +2467,7 @@ function parseCombinedCSV(text) {
       }
     } else if (r.length >= 7 && first.indexOf('MTF.csv') >= 0) {
       mtf.push({
+        file: first,
         mtf50: _num(r[1]),
         mtf50p: _num(r[2]),
         oversharpening: _num(r[3]),
@@ -2482,10 +2476,21 @@ function parseCombinedCSV(text) {
       });
     } else if (r.length >= 3 && first.indexOf('flatfield') >= 0) {
       const l = parseFloat(r[1]), c = parseFloat(r[2]);
-      if (!isNaN(l) && !isNaN(c)) shading.push({ luma: l, color: c });
+      if (!isNaN(l) && !isNaN(c)) shading.push({ file: first, luma: l, color: c });
     }
   }
-  return { summary, mtf, shading };
+  return { summary: byFile(summary), mtf: byFile(mtf), shading: byFile(shading) };
+}
+
+/* 按 .csv 文件名（含拍摄时间）从小到大排序：拍摄光源顺序固定，
+   必须让第 i 条记录对应第 i 个光源，否则数据会错位 */
+function cmpFileName(a, b) {
+  const na = String((a && a.file != null) ? a.file : (a || ''));
+  const nb = String((b && b.file != null) ? b.file : (b || ''));
+  return na.localeCompare(nb, 'zh-CN', { numeric: true, sensitivity: 'variant' });
+}
+function byFile(arr) {
+  return arr.slice().sort(cmpFileName);
 }
 
 /* ---------- 全局状态 ---------- */
@@ -2606,9 +2611,11 @@ function extractFlatfield(text, fname) {
 
 // 生成 combined_results.csv（还原脚本 echo 输出格式）
 function buildCombinedCSV(files) {
-  const summary = files.filter(f => f.kind === 'summary').map(f => extractSummary(f.text, f.name));
-  const mtf = files.filter(f => f.kind === 'mtf').map(f => extractMTF(f.text, f.name));
-  const shading = files.filter(f => f.kind === 'shading').map(f => extractFlatfield(f.text, f.name));
+  // 先按文件名（拍摄时间）升序，保证导出的每一段与固定光源顺序一一对应
+  const ordered = files.slice().sort((a, b) => cmpFileName(a.name, b.name));
+  const summary = ordered.filter(f => f.kind === 'summary').map(f => extractSummary(f.text, f.name));
+  const mtf = ordered.filter(f => f.kind === 'mtf').map(f => extractMTF(f.text, f.name));
+  const shading = ordered.filter(f => f.kind === 'shading').map(f => extractFlatfield(f.text, f.name));
   const lines = [];
   if (summary.length) {
     lines.push('文件名,色彩准度,色彩饱和度,白平衡（20到23灰块MAXΔC00）,曝光（第22灰块Pixel value）,Gamma,对比度,空间噪声（第22灰块Y通道）');
@@ -3491,26 +3498,39 @@ function computeAnalysis(schemes) {
   const active = schemes.filter(s => s.text && s.text.trim());
   const labels = active.map(s => s.label.trim() || '方案');
   const data = active.map(s => ({ label: s.label, parsed: parseCombinedCSV(s.text) }));
+  const warns = [];
+  const seen = {};
   const grid = SECTIONS.map(sec => {
     const rows = [];
     for (let i = 0; i < sec.rows; i++) {
       const cells = data.map(d => {
         const arr = sec.get(d.parsed);
         const item = arr && arr[i];
-        if (!item) return { value: null, na: true, ok: true };
+        if (!item) return { value: null, na: true, ok: true, file: '' };
         const v = sec.pick ? sec.pick(item) : item[sec.field];
+        const file = item.file || '';
         const missing = v == null || v === '' || (typeof v === 'number' && isNaN(v));
-        if (missing) return { value: null, na: true, ok: true };
+        if (missing) return { value: null, na: true, ok: true, file: file };
         const crit = sec.crits ? sec.crits[i] : sec.crit;
         const light = sec.lights[i];
         const ok = !!sec.judge(v, crit, light);
-        return { value: v, ok, na: false, display: sec.fmt(v) };
+        return { value: v, ok, na: false, display: sec.fmt(v), file: file };
       });
       rows.push({ cells });
     }
+    // 行数校验：某方案该段记录数与光源数不一致时，后面的行会错位
+    data.forEach((d, di) => {
+      const arr = sec.get(d.parsed);
+      const n = arr ? arr.length : 0;
+      const key = labels[di] + '|' + n + '|' + sec.rows;
+      if (n && n !== sec.rows && !seen[key]) {
+        seen[key] = 1;
+        warns.push(labels[di] + '：' + n + ' 条记录 / 应为 ' + sec.rows + ' 个光源');
+      }
+    });
     return { sec, rows };
   });
-  return { labels, data, grid };
+  return { labels, data, grid, warns: warns };
 }
 
 function computeStats(grid) {
@@ -3529,8 +3549,31 @@ function analyze(noSave) {
   state.analyzed = computeAnalysis(state.schemes);
   $('#results').hidden = false;
   renderResults();
+  renderDataWarn(state.analyzed.warns || []);
   if (!noSave) saveHistory();
   requestAnimationFrame(() => $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+}
+
+/* 行数/光源数不一致的常驻提示（避免静默错位） */
+function renderDataWarn(warns) {
+  const head = document.querySelector('#results .section-head');
+  if (!head) return;
+  const old = document.querySelector('#results .data-warn');
+  if (old) old.remove();
+  if (!warns.length) return;
+  const box = document.createElement('div');
+  box.className = 'data-warn';
+  box.style.cssText = 'margin:10px 0 0;padding:10px 14px;border:1px solid #F0D5AC;background:#FBF1E0;color:#8A4B06;border-radius:8px;font-size:12.5px;line-height:1.8';
+  const b = document.createElement('b');
+  b.textContent = '数据行数与光源数不一致（已按文件名升序对齐，仍建议核对）：';
+  box.appendChild(b);
+  warns.forEach(t => {
+    const s = document.createElement('span');
+    s.style.cssText = 'margin-left:12px;white-space:nowrap';
+    s.textContent = t;
+    box.appendChild(s);
+  });
+  head.parentNode.insertBefore(box, head.nextSibling);
 }
 
 /* ---------- 渲染：汇总（卡片与统计提示已从页面移除，保留函数兼容旧调用） ---------- */
@@ -4275,7 +4318,9 @@ function exportXLSX() {
   if (!state.analyzed) { toast('请先开始分析', true); return; }
   if (typeof XLSX === 'undefined') { toast('XLSX 库未加载（无网络），请改用 CSV 导出', true); return; }
   const { labels, grid } = state.analyzed;
-  const aoa = [['测试内容', '光源（色温/照度）', '要求/指标'].concat(labels)];
+  // 末尾追加「对应 .csv 文件名」列，与每一行数据一一对应
+  const aoa = [['测试内容', '光源（色温/照度）', '要求/指标'].concat(labels)
+    .concat(labels.map(l => l + ' 对应 .csv 文件名'))];
   const merges = [];
   const badCells = [];
   let r = 2;
@@ -4292,6 +4337,7 @@ function exportXLSX() {
           if (!c.ok) badCells.push({ r: r - 1, c: 3 + ci });
         }
       });
+      row.cells.forEach(c => line.push(c.file || ''));
       aoa.push(line);
       r++;
     });
@@ -4299,8 +4345,10 @@ function exportXLSX() {
   });
   const ws = XLSX.utils.aoa_to_sheet(aoa);
   ws['!merges'] = merges;
-  ws['!cols'] = [{ wch: 15 }, { wch: 20 }, { wch: 34 }].concat(labels.map(() => ({ wch: 15 })));
-  for (let c = 0; c < 3 + labels.length; c++) {
+  ws['!cols'] = [{ wch: 15 }, { wch: 20 }, { wch: 34 }]
+    .concat(labels.map(() => ({ wch: 15 })))
+    .concat(labels.map(() => ({ wch: 34 })));
+  for (let c = 0; c < 3 + labels.length * 2; c++) {
     const cell = ws[XLSX.utils.encode_cell({ r: 0, c })];
     if (cell) cell.s = { font: { bold: true, color: { rgb: 'FFFFFF' } }, fill: { fgColor: { rgb: '1B5E8C' } }, alignment: { vertical: 'center' } };
   }
@@ -4323,6 +4371,7 @@ function exportCSV() {
   const lines = [];
   const head = ['测试内容', '光源（色温/照度）', '要求/指标'];
   labels.forEach(l => { head.push(l + ' 值', l + ' 判定'); });
+  labels.forEach(l => { head.push(l + ' 对应 .csv 文件名'); });
   lines.push(head.map(csvCell).join(','));
   grid.forEach(g => {
     const sec = g.sec;
@@ -4333,6 +4382,7 @@ function exportCSV() {
         if (c.na) { line.push('', '无数据'); }
         else { line.push(c.display, c.ok ? '合格' : '不合格'); }
       });
+      row.cells.forEach(c => line.push(c.file || ''));
       lines.push(line.map(csvCell).join(','));
     });
   });
@@ -6879,7 +6929,7 @@ window.__TOOLS['fov'] = function(){
   var ph = function(id){ var v = parseFloat(el(id).value); return (isFinite(v) && v > 0 && v < 179.9) ? v : NaN; };
   var setText = function(id, t){ el(id).textContent = t; };
 
-  var DEF = { lens:'', sensor:'', efl:'4.5', ndfov:'80', mdfov:'', cdfov:'45',
+  var DEF = { lens:'', sensor:'', efl:'4.5', ndfov:'80',
               resW:'4000', resH:'3000', pitch:'1.4', cropW:'1920', cropH:'1080',
               dist:'500', xpos:'180', xneg:'-180', ypos:'101', yneg:'-101' };
 
@@ -6911,18 +6961,25 @@ window.__TOOLS['fov'] = function(){
     window.__result = null;
   }
 
-  function compute(){
+  function compute(m){
     var W = num('resW'), H = num('resH'), pitch = num('pitch'), efl = num('efl');
-    var nd = ph('ndfov'), md = ph('mdfov'), cd = ph('cdfov');
+    var nd = ph('ndfov');
+    var md = (m && isFinite(m.dfov)) ? m.dfov : NaN;
 
     if (!(W > 0 && H > 0 && pitch > 0)) return { error:'请填写有效的分辨率与像素大小。' };
-    if (isNaN(efl) && isNaN(nd) && isNaN(md) && isNaN(cd)){
-      return { error:'请至少填写 EFL、镜头标称 DFOV、整机实测 DFOV、裁剪后 DFOV 中的一项。' };
+    if (isNaN(efl) && isNaN(nd) && isNaN(md)){
+      return { error:'请至少填写 EFL、单镜头标称 DFOV，或补全图卡实测读数。' };
     }
 
     var sw = W * pitch / 1000;
     var sh = H * pitch / 1000;
     var sd = Math.sqrt(sw*sw + sh*sh);
+
+    // 传感器可容纳的 16:9 有效区（按短边裁切）
+    var w169, h169;
+    if (sw / sh >= 16/9){ h169 = sh; w169 = sh * 16/9; }
+    else { w169 = sw; h169 = sw * 9/16; }
+    var sd169 = Math.sqrt(w169*w169 + h169*h169);
 
     var cw = num('cropW'), ch = num('cropH');
     if (!(cw > 0)) cw = W;
@@ -6933,20 +6990,18 @@ window.__TOOLS['fov'] = function(){
     var csd = Math.sqrt(csw*csw + csh*csh);
 
     var dTheory = isNaN(efl) ? NaN : fovOf(sd, efl);
+    var d169 = isNaN(efl) ? NaN : fovOf(sd169, efl);
     var fBase, srcKey, srcLabel, srcShort;
 
     if (!isNaN(md)){
       fBase = (sd/2) / Math.tan(md/2 * D2R);
       srcKey = 'meas'; srcLabel = '整机实测 DFOV'; srcShort = '整机实测';
-    } else if (!isNaN(cd)){
-      fBase = (csd/2) / Math.tan(cd/2 * D2R);
-      srcKey = 'crop'; srcLabel = '裁剪后 DFOV'; srcShort = '裁剪后';
     } else if (!isNaN(nd)){
       var useNominal = true;
       if (!isNaN(dTheory) && nd > dTheory + 0.5){ useNominal = false; }
       if (useNominal){
         fBase = (sd/2) / Math.tan(nd/2 * D2R);
-        srcKey = 'nom'; srcLabel = '镜头标称 DFOV'; srcShort = '标称';
+        srcKey = 'nom'; srcLabel = '单镜头标称 DFOV'; srcShort = '标称';
       } else {
         fBase = efl; srcKey = 'theory'; srcLabel = '几何理论'; srcShort = '几何';
       }
@@ -6960,10 +7015,11 @@ window.__TOOLS['fov'] = function(){
     return {
       lens: el('lens').value.trim(),
       sensor: el('sensor').value.trim(),
-      W:W, H:H, pitch:pitch, efl:efl, nd:nd, md:md, cd:cd,
+      W:W, H:H, pitch:pitch, efl:efl, nd:nd, md:md,
       cw:cw, ch:ch,
       sw:sw, sh:sh, sd:sd, csw:csw, csh:csh, csd:csd,
-      dTheory:dTheory, fBase:fBase,
+      w169:w169, h169:h169, sd169:sd169,
+      dTheory:dTheory, d169:d169, fBase:fBase,
       srcKey:srcKey, srcLabel:srcLabel, srcShort:srcShort,
       oH:oH, oV:oV, oD:oD, cH:cH, cV:cV, cD:cD
     };
@@ -7007,8 +7063,9 @@ window.__TOOLS['fov'] = function(){
 
     var m = measure();
     renderMeasure(m);
+    el('mdfovView').value = m ? m.dfov.toFixed(2) : '';
 
-    var r = compute();
+    var r = compute(m);
     var errBox = el('err');
 
     if (r.error){
@@ -7041,8 +7098,12 @@ window.__TOOLS['fov'] = function(){
 
     var rows = [];
     if (!isNaN(r.dTheory)){
-      rows.push({ name:'几何理论', det:'EFL ' + r.efl.toFixed(2) + ' mm × sensor 对角线',
+      rows.push({ name:'几何理论', det:'EFL ' + r.efl.toFixed(2) + ' mm × sensor 对角线 ' + r.sd.toFixed(2) + ' mm',
         val:r.dTheory, state: r.srcKey === 'theory' ? 'on' : 'off' });
+    }
+    if (!isNaN(r.d169)){
+      rows.push({ name:'16:9 理论', det:'sensor 16:9 有效区 ' + r.w169.toFixed(2) + ' × ' + r.h169.toFixed(2) + ' mm（对角 ' + r.sd169.toFixed(2) + ' mm）',
+        val:r.d169, state:'off' });
     }
     if (!isNaN(r.nd)){
       var ns;
@@ -7054,10 +7115,6 @@ window.__TOOLS['fov'] = function(){
     if (!isNaN(r.md)){
       rows.push({ name:'整机实测', det:'实际出图 DFOV（全画幅口径）',
         val:r.md, state: r.srcKey === 'meas' ? 'on' : 'off' });
-    }
-    if (!isNaN(r.cd)){
-      rows.push({ name:'裁剪后实测', det:'裁剪区域 ' + r.cw + ' × ' + r.ch + ' px 口径',
-        val:r.cd, state: r.srcKey === 'crop' ? 'on' : 'off' });
     }
 
     var pillText = { on:'已采用', warn:'像场有余量', off:'参考' };
@@ -7173,6 +7230,7 @@ window.__TOOLS['fov'] = function(){
 
     rows.push(['基准','采用基准', r.srcLabel, '']);
     rows.push(['基准','理论 DFOV', fix(r.dTheory,2), '°']);
+    rows.push(['基准','16:9 理论 DFOV', fix(r.d169,2), '°']);
     rows.push(['基准','校准焦距 f', r.fBase.toFixed(3), 'mm']);
 
     rows.push(['结果','原始 HFOV', fix(r.oH,2), '°']);
@@ -7269,23 +7327,9 @@ window.__TOOLS['fov'] = function(){
     update();
   });
 
-  ['lens','sensor','efl','ndfov','mdfov','cdfov','resW','resH','pitch','cropW','cropH',
+  ['lens','sensor','efl','ndfov','resW','resH','pitch','cropW','cropH',
    'dist','xpos','xneg','ypos','yneg'].forEach(function(id){
     el(id).addEventListener('input', update);
-  });
-
-  el('btnFillFull').addEventListener('click', function(){
-    var m = measure();
-    if (!m) return;
-    el('mdfov').value = m.dfov.toFixed(2);
-    update();
-  });
-
-  el('btnFillCrop').addEventListener('click', function(){
-    var m = measure();
-    if (!m) return;
-    el('cdfov').value = m.dfov.toFixed(2);
-    update();
   });
 
   update();
