@@ -1884,6 +1884,10 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       <button class="btn ok" id="actRename" type="button">原地重命名（Chrome / Edge）</button>
       <button class="btn ghost" id="actUndo" type="button">撤销原地重命名</button>
     </div>
+    <p class="hint" style="margin-top:8px" id="renameHint">
+      原地重命名要求：① 用 Chrome / Edge 打开 https 或 localhost 地址（本地双击 file:// 打开时浏览器禁用文件系统接口）；
+      ② 优先用「选择文件夹」导入，并在弹窗里选择「编辑 / 允许修改」；③ 若浏览器未实现文件改名接口，工具会自动改用「复制内容 + 删除旧文件」的方式完成改名。
+    </p>
   </section>
 
 </main>
@@ -6322,7 +6326,8 @@ const state = {
   tplMode:'fields', segments:[]
 };
 let entries = [];   // {name, mtime, file, handle}
-let renameLog = []; // {handle, old}
+let renameLog = []; // {dir, from, to} 或 {handle, from, to}
+let dirHandle = null; // 「选择文件夹」拿到的目录句柄，原地重命名 / 撤销用
 let rows = [];
 
 const PRESETS = [
@@ -6566,6 +6571,7 @@ function fromText(text){
   resolve();
 }
 function fromFiles(files){
+  dirHandle = null;
   entries = files.map(function(f){ return { name:f.name, mtime:(f.lastModified || null), file:f, handle:null }; });
   syncTextarea();
   resolve();
@@ -6722,6 +6728,7 @@ function bindInputs(){
         readAll.next().then(function(res){
           if(res.done){
             entries = list;
+            dirHandle = dir;
             syncTextarea();
             resolve();
             rnToast('已读取文件夹，共 ' + list.length + ' 个文件；如需原地重命名请在授权时允许修改');
@@ -6761,6 +6768,42 @@ function bindInputs(){
     if(!files.length) return;
     fromFiles(files);
     rnToast('已读取 ' + files.length + ' 个文件');
+  });
+}
+
+/* ===== 原地重命名：权限与改名实现 ===== */
+function hasMove(h){ return !!(h && typeof h.move === 'function'); }
+function hasMoveApi(){
+  try { return typeof FileSystemFileHandle !== 'undefined' && 'move' in FileSystemFileHandle.prototype; }
+  catch(e){ return false; }
+}
+/* 请求（必要时向用户申请）读写权限；目录句柄与文件句柄都适用 */
+function ensureRW(h){
+  if(!h || !h.queryPermission) return Promise.resolve(true);
+  return h.queryPermission({ mode:'readwrite' }).then(function(p){
+    if(p === 'granted') return true;
+    if(h.requestPermission) return h.requestPermission({ mode:'readwrite' }).then(function(q){ return q === 'granted'; });
+    return false;
+  }).catch(function(){ return false; });
+}
+function dirHas(dir, name){
+  return dir.getFileHandle(name).then(function(){ return true; }, function(){ return false; });
+}
+/* 目录内改名：优先 move()；浏览器未实现 move() 时复制内容到新文件再删除旧文件 */
+function renameInDir(dir, from, to){
+  if(from === to) return Promise.resolve('skip');
+  return dirHas(dir, to).then(function(taken){
+    if(taken) throw new Error('目标已存在：' + to);
+    return dir.getFileHandle(from);
+  }).then(function(fh){
+    if(hasMove(fh)) return fh.move(to).then(function(){ return 'move'; });
+    return fh.getFile().then(function(file){
+      return dir.getFileHandle(to, { create:true }).then(function(nh){
+        return nh.createWritable().then(function(w){
+          return w.write(file).then(function(){ return w.close(); });
+        }).then(function(){ return dir.removeEntry(from); });
+      });
+    }).then(function(){ return 'copy'; });
   });
 }
 
@@ -6841,38 +6884,77 @@ function bindActions(){
   });
 
   $('actRename').addEventListener('click', function(){
-    let handles = entries.filter(function(e){ return e.handle; }).map(function(e){ return e.handle; });
+    const jobs = [];
+    rows.forEach(function(r){
+      if(r.skip || r.old.trim() === r.name) return;
+      const e = entries.find(function(en){ return en.name === r.old.trim(); });
+      if(e && (e.handle || dirHandle)) jobs.push({ name:r.old.trim(), to:r.name, handle:e.handle });
+    });
+    if(!jobs.length){ rnToast('没有需要重命名的文件（新文件名与原文件名相同，或没有获得文件句柄）'); return; }
 
-    const doRename = function(){
-      const jobs = [];
-      rows.forEach(function(r){
-        if(r.skip || r.old.trim() === r.name) return;
-        const e = entries.find(function(en){ return en.name === r.old.trim(); });
-        if(e && e.handle) jobs.push({ handle:e.handle, old:r.old.trim(), to:r.name });
-      });
-      if(!jobs.length){ rnToast('没有需要重命名的文件'); return; }
-      let ok = 0, fail = 0;
-      function run(i){
-        if(i >= jobs.length){
-          rnToast('原地重命名完成 ' + ok + ' 个' + (fail ? '，失败 ' + fail + ' 个' : '') + '；可点「撤销」回退');
-          return;
-        }
-        const j = jobs[i];
-        j.handle.move(j.to).then(function(){
-          renameLog.push({ handle:j.handle, old:j.old });
-          ok++;
-          run(i + 1);
-        }, function(){
-          fail++;
-          run(i + 1);
-        });
-      }
-      run(0);
+    const finish = function(ok, fail, errs){
+      let msg = '原地重命名完成 ' + ok + ' 个';
+      if(fail) msg += '，失败 ' + fail + ' 个' + (errs.length ? '（' + errs[0] + '）' : '');
+      if(ok) msg += '；可点「撤销」回退';
+      rnToast(msg, fail > 0);
     };
 
-    if(handles.length){ doRename(); return; }
+    // 1) 有文件夹句柄：直接在该目录内改名（不依赖 Chrome 的 move() 接口）
+    if(dirHandle){
+      ensureRW(dirHandle).then(function(granted){
+        if(!granted){ rnToast('未获得文件夹写入权限：请重新「选择文件夹」并在弹窗中选择「编辑/允许修改」', true); return; }
+        let ok = 0, fail = 0; const errs = [];
+        (function run(i){
+          if(i >= jobs.length){ finish(ok, fail, errs); return; }
+          const j = jobs[i];
+          renameInDir(dirHandle, j.name, j.to).then(function(){
+            renameLog.push({ dir: dirHandle, from: j.name, to: j.to });
+            ok++; run(i + 1);
+          }, function(err){
+            fail++;
+            if(!errs.length) errs.push((err && (err.name || err.message)) || '未知错误');
+            run(i + 1);
+          });
+        })(0);
+      });
+      return;
+    }
+
+    // 2) 仅通过「选择本地文件」导入：只能用句柄的 move()
+    if(!hasMoveApi()){
+      if(!window.isSecureContext){
+        rnToast('当前页面不是 https / localhost，浏览器禁用了文件系统权限接口；请用线上地址打开，或改用「选择文件夹」/ 导出脚本', true);
+      }else{
+        rnToast('当前浏览器不支持直接改名（需 Chrome / Edge 111+ 的文件夹授权）。请改用「选择文件夹」导入后重命名，或导出 .bat 脚本', true);
+      }
+      return;
+    }
+    const doMove = function(list){
+      let ok = 0, fail = 0; const errs = [];
+      (function run(i){
+        if(i >= list.length){ finish(ok, fail, errs); return; }
+        const j = list[i];
+        ensureRW(j.handle).then(function(granted){
+          if(!granted) throw new Error('未获得写入权限');
+          return j.handle.move(j.to);
+        }).then(function(){
+          renameLog.push({ handle:j.handle, from:j.old, to:j.to });
+          ok++; run(i + 1);
+        }, function(err){
+          fail++;
+          if(!errs.length) errs.push((err && (err.name || err.message)) || '未知错误');
+          run(i + 1);
+        });
+      })(0);
+    };
+    const readyJobs = entries.filter(function(e){ return e.handle && hasMove(e.handle); })
+      .map(function(e){
+        const r = rows.find(function(x){ return x.old.trim() === e.name; });
+        return (r && r.old.trim() !== r.name) ? { handle:e.handle, old:e.name, to:r.name } : null;
+      }).filter(Boolean);
+    if(readyJobs.length){ doMove(readyJobs); return; }
     if(!window.showOpenFilePicker){
-      rnToast('当前浏览器不支持原地重命名（需 Chrome / Edge），请改用导出脚本或下载副本');
+      rnToast('当前浏览器不支持原地重命名（需 Chrome / Edge），请改用「选择文件夹」或导出脚本');
       return;
     }
     window.showOpenFilePicker({
@@ -6880,17 +6962,14 @@ function bindActions(){
       mode: 'readwrite',
       types: [{ description:'图片', accept:{ 'image/*':['.jpg','.jpeg','.png','.bmp','.webp','.tif','.tiff','.raw','.dng'] } }]
     }).then(function(picked){
-      handles = picked || [];
-      if(!handles.length){ rnToast('未选择文件'); return; }
-      let added = false;
-      handles.forEach(function(h){
-        if(!entries.some(function(e){ return e.name === h.name; })){
-          entries.push({ name:h.name, mtime:null, file:null, handle:h });
-          added = true;
-        }
+      const list = [];
+      picked.forEach(function(h){
+        const r = rows.find(function(x){ return x.old.trim() === h.name; });
+        if(r && r.old.trim() !== r.name) list.push({ handle:h, old:h.name, to:r.name });
+        if(!entries.some(function(e){ return e.name === h.name; })) entries.push({ name:h.name, mtime:null, file:null, handle:h });
       });
-      if(added){ syncTextarea(); resolve(); }
-      doRename();
+      if(!list.length){ rnToast('所选文件没有需要改名的项'); return; }
+      doMove(list);
     }).catch(function(e){
       if(e && e.name === 'AbortError'){ rnToast('已取消选择'); return; }
       rnToast('选择文件失败：' + (e && e.message ? e.message : '未知错误'));
@@ -6899,16 +6978,23 @@ function bindActions(){
 
   $('actUndo').addEventListener('click', function(){
     if(!renameLog.length){ rnToast('没有可撤销的记录'); return; }
-    let ok = 0;
-    function run(i){
+    let ok = 0; const errs = [];
+    (function run(i){
       if(i >= renameLog.length){
-        rnToast('已回退 ' + ok + ' 个文件');
+        rnToast('已回退 ' + ok + ' 个文件' + (errs.length ? '，失败 ' + errs.length + ' 个（' + errs[0] + '）' : ''), errs.length > 0);
         renameLog = [];
         return;
       }
-      renameLog[i].handle.move(renameLog[i].old).then(function(){ ok++; run(i + 1); }, function(){ run(i + 1); });
-    }
-    run(0);
+      const l = renameLog[i];
+      let p;
+      if(l.dir) p = renameInDir(l.dir, l.to, l.from);
+      else if(hasMove(l.handle)) p = l.handle.move(l.from);
+      else p = Promise.reject(new Error('句柄不支持改名'));
+      p.then(function(){ ok++; run(i + 1); }, function(err){
+        if(!errs.length) errs.push((err && (err.name || err.message)) || '未知错误');
+        run(i + 1);
+      });
+    })(0);
   });
 }
 
