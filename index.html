@@ -1815,7 +1815,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       </div>
       <div class="opt check-row"><label class="check-label"><input type="checkbox" id="f-useSeq" checked><span>追加序号</span></label></div>
       <div class="opt check-row"><label class="check-label"><input type="checkbox" id="f-keepExt" checked><span>保留原扩展名</span></label></div>
-      <div class="opt check-row"><label class="check-label"><input type="checkbox" id="f-keepOriginal"><span>加前缀时保留原始文件名</span></label></div>
+      <div class="opt check-row"><label class="check-label"><input type="checkbox" id="f-keepOriginal" checked><span>保留原始文件名（推荐）</span></label></div>
     </div>
 
     <!-- 命名词汇规范库 -->
@@ -1889,8 +1889,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
 </main>
 
 <footer>
-  说明：「词汇模板命名」（默认）新文件名按「前缀 + 产品 + 测试项 + 场景 + 补光 + 亮度 + 色温 + 环境照度 + 序号 + 原扩展名」自动拼接，空字段自动跳过；重名冲突自动追加 _2、_3。<br>
-  「分段前缀命名」：按张数分段为图片加前缀，新文件名 = 分段词 + 序号（如第 1–6 张 SFR_01…SFR_06、第 7–17 张 Colorcheck_07…），不套用词汇字段模板。两种模式互斥；勾选「加前缀时保留原始文件名」后，仅在原文件名前追加分段词（如 SFR_IMG_0001.JPG）。模板可保存、复用、删除，词汇来自「命名词汇规范库」。「原地重命名」需要 Chrome / Edge 并授权文件夹读写；「下载重命名副本」由浏览器逐个下载新文件。导出脚本请在文件所在目录下运行（Windows 用 .bat，macOS / Linux 用 .sh）。
+  说明：「词汇模板命名」（默认）新文件名 = 前缀 + 产品 + 测试项 + 场景 + 补光 + 亮度 + 色温 + 环境照度 + 序号 + **原始文件名** + 后缀 + 原扩展名，空字段自动跳过；重名冲突自动追加 _2、_3。<br>
+  「分段前缀命名」：按张数分段加前缀，新文件名 = 分段词 + 序号 + **原始文件名**（如第 1–6 张 SFR_01_原文件名、第 7–17 张 Colorcheck_07_原文件名），不套用词汇字段模板。两种模式互斥。**两种模式都默认保留原始文件名**，工具只在其前后追加前缀 / 后缀 / 序号；取消勾选「保留原始文件名（推荐）」后才会完全替换为新名称。模板可保存、复用、删除，词汇来自「命名词汇规范库」。「原地重命名」需要 Chrome / Edge 并授权文件夹读写；「下载重命名副本」由浏览器逐个下载新文件。导出脚本请在文件所在目录下运行（Windows 用 .bat，macOS / Linux 用 .sh）。
 </footer>
 
 <div id="rnToast" role="status"></div>
@@ -6271,7 +6271,7 @@ function renderSegments(){
     list.appendChild(row);
   });
   $('segModeTitle').textContent = '分段前缀模板';
-  $('segModeSub').textContent = '模板按张数分段；新文件名 = 分段词 + 序号（不套用词汇字段模板）';
+  $('segModeSub').textContent = '模板按张数分段；新文件名 = 分段词 + 序号 + 原始文件名（默认保留原名）';
   $('segHint').textContent = '按排序后的顺序依次分配：例如第 1–6 张加 SFR，第 7–17 张加 Colorcheck，第 18–26 张加 Uniformity，第 27–38 张加 QC。词汇来自「命名词汇规范库 · 前缀词」。';
   updateSegTotal();
 }
@@ -6291,8 +6291,8 @@ function applyModeUI(){
   $('optPrefix').style.display = seg ? 'none' : '';
   $('optSuffix').style.display = seg ? 'none' : '';
   $('modeHint').textContent = seg
-    ? '按张数分段为图片添加前缀，新文件名 = 分段词 + 序号（不套用词汇字段）'
-    : '按词汇字段（产品 + 测试项 + 场景 + 补光 + 亮度 + 色温 + 环境照度 + 序号）自动拼接新文件名';
+    ? '按张数分段加前缀，新文件名 = 分段词 + 序号 + 原始文件名（默认保留原名）'
+    : '新文件名 = 词汇字段 + 序号 + 原始文件名，前缀 / 后缀可选（默认保留原名）';
 }
 function renderTemplateSelect(selected){
   const sel = $('tplSelect');
@@ -6318,7 +6318,7 @@ const chipColors = { 1:'var(--chip1)', 2:'var(--chip2)', 3:'var(--chip3)', 4:'va
 const state = {
   fields: { product:'S600LX', test:'Uniformity', scene:'WhiteWall', light:'CoolWhite', brightness:'100%', ctemp:'6500K', illuminance:'' },
   sep:'_', prefix:'', suffix:'', useSeq:true, seqStart:1, seqPad:2,
-  keepExt:true, keepOriginal:false, sortMode:'none',
+  keepExt:true, keepOriginal:true, sortMode:'none',
   tplMode:'fields', segments:[]
 };
 let entries = [];   // {name, mtime, file, handle}
@@ -6348,6 +6348,13 @@ function sortedEntries(){
 function seqPart(idx){
   return state.useSeq ? String(state.seqStart + idx).padStart(state.seqPad,'0') : '';
 }
+/* 前缀块：前缀 + 词汇字段（保留原名时作为「加在前面」的部分） */
+function headText(){
+  const parts = [];
+  if(state.prefix) parts.push(state.prefix);
+  FIELD_KEYS.forEach(function(k){ if(state.fields[k]) parts.push(state.fields[k]); });
+  return sanitize(parts.join(state.sep));
+}
 function baseName(idx){
   const parts = [];
   if(state.prefix) parts.push(state.prefix);
@@ -6362,8 +6369,15 @@ function resolve(){
   const list = sortedEntries();
   rows = list.map(function(e, i){
     const [baseOrig, ext] = splitExt(e.name.trim());
+    // 默认保留原始文件名：只在前后追加「前缀块 / 序号 / 后缀」
+    // 分段模式的前缀由下方分段块拼接，这里只保留原名，避免混入词汇字段
+    const core = state.keepOriginal
+      ? (state.tplMode === 'seg'
+          ? sanitize(baseOrig)
+          : [headText(), seqPart(i), sanitize(baseOrig), sanitize(state.suffix)].filter(Boolean).join(state.sep))
+      : baseName(i);
     return {
-      old:e.name, base: state.keepOriginal ? baseOrig : baseName(i),
+      old:e.name, base: core,
       ext: state.keepExt ? ext : '',
       custom:null, name:'', skip:false, dup:false,
       mtime:e.mtime, rank:i + 1, prefixed:false
@@ -6378,7 +6392,9 @@ function resolve(){
       if(r.skip) return;
       if(si < segs.length){
         const w = segs[si].word;
-        r.base = state.keepOriginal ? sanitize(w) + state.sep + r.base : sanitize(w) + (seqPart(r.rank - 1) ? state.sep + seqPart(r.rank - 1) : '');
+        r.base = state.keepOriginal
+          ? [sanitize(w), seqPart(r.rank - 1), sanitize(r.base), sanitize(state.suffix)].filter(Boolean).join(state.sep)
+          : sanitize(w) + (seqPart(r.rank - 1) ? state.sep + seqPart(r.rank - 1) : '');
         r.prefixed = true;
         r.segLabel = w;
         used++;
@@ -6418,18 +6434,18 @@ function renderChips(){
   };
   if(state.tplMode === 'seg'){
     state.segments.forEach(function(s){ if(s.word && s.count > 0) add(s.word + '×' + s.count, 'var(--chip5)'); });
-    if(state.keepOriginal){ add('原始文件名', '#6B7280'); }
-    else if(seqPart(0)){ add(state.sep + seqPart(0), 'var(--warn)', 'seq'); }
-  } else if(state.keepOriginal){
+    if(state.useSeq) add(state.sep + String(state.seqStart).padStart(state.seqPad,'0'), 'var(--warn)', 'seq');
     add('原始文件名', '#6B7280');
+    if(state.suffix) add(state.suffix, '#6B7280');
   } else {
     if(state.prefix) add(state.prefix, '#6B7280');
     FIELD_KEYS.forEach(function(k){
       if(state.fields[k]) add(state.fields[k], chipColors[FIELD_COLORS[k]]);
       if(k !== FIELD_KEYS[FIELD_KEYS.length-1]) add(state.sep, null, 'sep');
     });
-    if(state.suffix) add(state.suffix, '#6B7280');
     if(state.useSeq) add(state.sep + String(state.seqStart).padStart(state.seqPad,'0'), 'var(--warn)', 'seq');
+    add('原始文件名', '#6B7280');
+    if(state.suffix) add(state.suffix, '#6B7280');
   }
 }
 
@@ -6438,12 +6454,12 @@ function renderPreview(){
   const first = state.segments.find(function(s){ return s.word; });
   let sample;
   if(state.tplMode === 'seg' && first){
-    sample = state.keepOriginal
-      ? sanitize(first.word) + state.sep + 'IMG_0001'
-      : sanitize(first.word) + (seqPart(0) ? state.sep + seqPart(0) : '');
-    sample = sanitize(sample);
+    sample = sanitize([sanitize(first.word), seqPart(0), state.keepOriginal ? 'IMG_0001' : '', sanitize(state.suffix)]
+      .filter(Boolean).join(state.sep));
+  } else if(state.keepOriginal){
+    sample = sanitize([headText(), seqPart(0), 'IMG_0001', sanitize(state.suffix)].filter(Boolean).join(state.sep));
   } else {
-    sample = state.keepOriginal ? 'IMG_0001' : baseName(0);
+    sample = baseName(0);
   }
   p.innerHTML = esc(sample) + (state.keepExt ? '<span class="ext">.jpg</span>' : '');
 }
